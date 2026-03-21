@@ -75,7 +75,6 @@ export default [
       'eqeqeq': ['error', 'always'], // всегда использовать === вместо ==
       'no-var': 'error', // запрещаем var
       'prefer-const': 'error', // если переменная не меняется → const
-      'no-implicit-coercion': 'warn', // запрещает странные штуки типа !!foo или +bar
       'curly': ['error', 'all'], // всегда фигурные скобки, даже в if на 1 строку
       'no-fallthrough': 'error', 
       'no-unused-vars': 'off', // отключаем дефолт

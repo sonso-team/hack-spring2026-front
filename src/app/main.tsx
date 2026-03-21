@@ -1,16 +1,33 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
-import { RouterProvider } from 'react-router-dom';
+import { RouterProvider } from 'react-router';
 
-import { setupStore } from '../redux-rtk';
-import './index.css'; // если используешь scss
+import './index.css';
 import { router } from './router';
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <Provider store={setupStore()}>
-      <RouterProvider router={router} />
-    </Provider>
-  </StrictMode>,
-);
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 30_000,
+    },
+  },
+});
+
+async function bootstrap() {
+  if (import.meta.env.DEV) {
+    const { worker } = await import('../mocks/browser');
+    await worker.start({ onUnhandledRequest: 'bypass' });
+  }
+
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </StrictMode>,
+  );
+}
+
+bootstrap();

@@ -1,16 +1,27 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router';
 
+import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { PublicRoute } from '@/components/PublicRoute';
 import { Wrapper } from '@/components/Wrapper';
-
-import { HomePage } from '../pages/HomePage';
+import { AdminsPage } from '@/pages/AdminsPage';
+import { DashboardPage } from '@/pages/DashboardPage';
+import { LoginPage } from '@/pages/LoginPage';
 
 export const router = createBrowserRouter([
   {
-    path: '/',
-    element: <Wrapper />, // общая обёртка с меню
+    element: <PublicRoute />,
+    children: [{ path: '/login', element: <LoginPage /> }],
+  },
+  {
+    element: <ProtectedRoute />,
     children: [
-      { index: true, element: <HomePage /> },
-      // { path: 'todos', element: <TodosPage /> },
+      {
+        element: <Wrapper />,
+        children: [
+          { path: '/', element: <DashboardPage /> },
+          { path: '/admins', element: <AdminsPage /> },
+        ],
+      },
     ],
   },
 ]);

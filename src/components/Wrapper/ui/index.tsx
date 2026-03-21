@@ -1,18 +1,42 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router';
 
-// import { Footer } from '@/components/Footer';
-// import { Header } from '@/components/Header';
-// import { SideBar } from '@/components/SideBar';
+import { Button } from '@/components/ui/button';
+import { useAuthStore } from '@/store/authStore';
+
 import './wrapper.scss';
 
-export const Wrapper: React.FC = () => (
-  <div className="wrapper">
-    {/* <SideBar /> */}
-    <div className="wrapper__maincont">
-      {/* <Header /> */}
-      <Outlet />
-      {/* <Footer /> */}
+export const Wrapper = () => {
+  const navigate = useNavigate();
+  const admin = useAuthStore((s) => s.admin);
+  const logout = useAuthStore((s) => s.logout);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
+
+  return (
+    <div className="layout">
+      <header className="layout__header">
+        <Link to="/" className="layout__logo">
+          <img src="/assets/logo.svg" alt="DDoS-Guard" className="layout__logo-img" />
+        </Link>
+
+        <div className="layout__actions">
+          {admin && (
+            <span className="layout__admin-name">
+              {admin.first_name} {admin.last_name}
+            </span>
+          )}
+          <Button variant="outline" onClick={handleLogout}>
+            Выход
+          </Button>
+        </div>
+      </header>
+
+      <main className="layout__content">
+        <Outlet />
+      </main>
     </div>
-  </div>
-);
+  );
+};
