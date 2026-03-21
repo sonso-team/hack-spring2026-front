@@ -10,7 +10,7 @@ import { Preloader } from './scenes/Preloader';
 const config: Phaser.Types.Core.GameConfig = {
     type: AUTO,
     parent: 'game-container',
-    backgroundColor: '#028af8',
+    backgroundColor: '#0e1335',
     scale: {
         mode: Scale.RESIZE,
         width: window.innerWidth,

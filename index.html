@@ -5,11 +5,21 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Phaser React Template</title>
+    <link rel="stylesheet" href="/splash.css" />
 </head>
 
 <body>
-    <div id="root"></div>
+    <div id="root">
+        <div class="boot-splash" role="status" aria-live="polite">
+            <div class="boot-splash__inner">
+                <p class="boot-splash__text">Генерируем игру на ходу</p>
+                <p class="boot-splash__subtext">Пожалуйста подождите...</p>
+                <div class="boot-splash__track">
+                    <span class="boot-splash__bar"></span>
+                </div>
+            </div>
+        </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
-
 </body>
 </html>
