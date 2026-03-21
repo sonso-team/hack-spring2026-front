@@ -6,6 +6,7 @@ import { Wrapper } from '@/components/Wrapper';
 import { AdminsPage } from '@/pages/AdminsPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { LoginPage } from '@/pages/LoginPage';
+import { NotFoundPage } from '@/pages/NotFoundPage';
 
 export const router = createBrowserRouter([
   {
@@ -20,6 +21,7 @@ export const router = createBrowserRouter([
         children: [
           { path: '/', element: <DashboardPage /> },
           { path: '/admins', element: <AdminsPage /> },
+          { path: '*', element: <NotFoundPage /> },
         ],
       },
     ],

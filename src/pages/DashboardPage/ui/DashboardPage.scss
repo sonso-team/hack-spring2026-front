@@ -44,7 +44,7 @@
     background: rgba(16, 29, 79, 0.745);
     text-decoration: none;
     color: var(--c-text);
-    overflow: visible;
+    overflow: hidden;
     transition:
       transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
       box-shadow 0.3s ease,
@@ -96,30 +96,25 @@
 
   &__bg-icon {
     position: absolute;
-    top: -24px;
-    right: -24px;
-    width: 220px;
-    height: 220px;
-    opacity: 0.055;
-    color: #fff;
+    top: -40px;
+    right: -30px;
+    width: 300px;
+    height: 300px;
+    object-fit: contain;
+    opacity: 0.18;
     pointer-events: none;
     user-select: none;
     transition: opacity 0.3s ease;
 
     .dashboard__card--sm & {
-      width: 160px;
-      height: 160px;
-      top: -18px;
-      right: -18px;
+      width: 200px;
+      height: 200px;
+      top: -40px;
+      right: -20px;
     }
 
     .dashboard__card:hover & {
-      opacity: 0.09;
-    }
-
-    svg {
-      width: 100%;
-      height: 100%;
+      opacity: 0.28;
     }
   }
 
