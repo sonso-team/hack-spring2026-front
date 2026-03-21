@@ -65,7 +65,7 @@ function App()
     const handleRestartFromGameOver = () =>
     {
         setIsIntroOpen(false);
-        startScene('MainMenu');
+        startScene('Game');
     };
 
     const isMainMenuStartVisible = !isIntroOpen && activeSceneKey === 'MainMenu';
@@ -99,13 +99,6 @@ function App()
                                     Начать
                                 </button>
                             </section>
-                        </div>
-                    )}
-                    {isMainMenuStartVisible && (
-                        <div className="menu-start-overlay">
-                            <button className="menu-start-button" onClick={handleStartGame} type="button">
-                                Начать
-                            </button>
                         </div>
                     )}
                 </Layout>
