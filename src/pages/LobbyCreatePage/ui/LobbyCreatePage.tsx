@@ -1,88 +1,17 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { createLobby } from '@/api/lobby';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/Button';
+import { Input } from '@/components/Input';
+import { Stepper } from '@/components/Stepper';
 import type { Difficulty, GameType } from '@/shared/types';
 
+import { DIFFICULTIES, GAMES } from '../lib/constants';
+import { validate } from '../lib/validate';
+
 import './LobbyCreatePage.scss';
-
-const GAMES: { value: GameType; label: string; hasDifficulty: boolean }[] = [
-  { value: 'ddos_ninja', label: 'Server Defenders', hasDifficulty: false },
-];
-
-const DIFFICULTIES: { value: Difficulty; label: string }[] = [
-  { value: 'easy', label: 'Лёгкий' },
-  { value: 'medium', label: 'Средний' },
-  { value: 'hard', label: 'Сложный' },
-];
-
-interface StepperProps {
-  value: number;
-  min?: number;
-  max?: number;
-  unit?: string;
-  onChange: (v: number) => void;
-  hasError?: boolean;
-}
-
-const Stepper = ({ value, min = 1, max, unit, onChange, hasError }: StepperProps) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/\D/g, '');
-    if (raw === '') {
-      onChange(min);
-      return;
-    }
-    const num = Number(raw);
-    onChange(max !== undefined ? Math.min(max, num) : num);
-  };
-
-  const handleBlur = () => {
-    if (value < min) {
-      onChange(min);
-    }
-  };
-
-  return (
-    <div className={`lobby-create__stepper${hasError ? ' lobby-create__stepper--error' : ''}`}>
-      <div className="lobby-create__stepper-val" onClick={() => inputRef.current?.focus()}>
-        <input
-          ref={inputRef}
-          className="lobby-create__stepper-input"
-          type="text"
-          inputMode="numeric"
-          value={value}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          style={{ width: `${Math.max(1, String(value).length)}ch` }}
-        />
-        {unit && <span className="lobby-create__stepper-unit">{unit}</span>}
-      </div>
-      <div className="lobby-create__stepper-btns">
-        <button
-          type="button"
-          className="lobby-create__stepper-btn"
-          onClick={() => onChange(Math.max(min, value - 1))}
-          disabled={value <= min}
-        >
-          −
-        </button>
-        <button
-          type="button"
-          className="lobby-create__stepper-btn"
-          onClick={() => onChange(max !== undefined ? Math.min(max, value + 1) : value + 1)}
-          disabled={max !== undefined && value >= max}
-        >
-          +
-        </button>
-      </div>
-    </div>
-  );
-};
 
 export const LobbyCreatePage = () => {
   const navigate = useNavigate();
@@ -111,29 +40,11 @@ export const LobbyCreatePage = () => {
     },
   });
 
-  const validate = (): Record<string, string> => {
-    const next: Record<string, string> = {};
-
-    if (!name.trim()) {
-      next.name = 'Обязательное поле';
-    } else if (name.length > 100) {
-      next.name = 'Максимум 100 символов';
-    }
-
-    if (!gameOverText.trim()) {
-      next.gameOverText = 'Обязательное поле';
-    } else if (gameOverText.length > 500) {
-      next.gameOverText = 'Максимум 500 символов';
-    }
-
-    return next;
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFormError('');
 
-    const errs = validate();
+    const errs = validate(name, gameOverText);
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;

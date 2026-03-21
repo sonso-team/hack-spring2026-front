@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { isAxiosError } from 'axios';
 
 import { api } from '@/shared/axios.config';
 import type { Difficulty, GameType, Lobby, LobbyStatus, PlayerResult } from '@/shared/types';
@@ -30,7 +30,7 @@ export const getLobby = async (): Promise<Lobby | null> => {
     const { data } = await api.get<Lobby>('/admin/lobby');
     return data;
   } catch (err) {
-    if (axios.isAxiosError(err) && err.response?.status === 404) {
+    if (isAxiosError(err) && err.response?.status === 404) {
       return null;
     }
     throw err;

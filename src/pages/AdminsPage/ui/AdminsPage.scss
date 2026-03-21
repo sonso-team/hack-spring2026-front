@@ -136,23 +136,6 @@
     }
   }
 
-  &__avatar {
-    flex-shrink: 0;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: rgba(24, 104, 240, 0.2);
-    border: 1px solid rgba(24, 104, 240, 0.3);
-    color: #93c5fd;
-    font-size: 14px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
   &__info {
     flex: 1;
     display: flex;

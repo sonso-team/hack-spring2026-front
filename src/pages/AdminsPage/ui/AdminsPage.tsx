@@ -2,43 +2,15 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import { createAdmin, deleteAdmin, getAdmins } from '@/api/admins';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Avatar } from '@/components/Avatar';
+import { Button } from '@/components/Button';
+import { Input } from '@/components/Input';
 import type { AdminFull } from '@/shared/types';
 
+import { EMPTY_FORM, validate } from '../lib/validate';
+import type { FormErrors, FormKey } from '../lib/validate';
+
 import './AdminsPage.scss';
-
-const EMPTY_FORM = { first_name: '', last_name: '', position: '', email: '', password: '' };
-type FormKey = keyof typeof EMPTY_FORM;
-type FormErrors = Partial<Record<FormKey, string>>;
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-const validate = (form: typeof EMPTY_FORM): FormErrors => {
-  const e: FormErrors = {};
-
-  if (!form.last_name.trim()) {
-    e.last_name = 'Введите фамилию';
-  }
-
-  if (!form.first_name.trim()) {
-    e.first_name = 'Введите имя';
-  }
-
-  if (!form.email.trim()) {
-    e.email = 'Введите почту';
-  } else if (!EMAIL_RE.test(form.email)) {
-    e.email = 'Некорректный email';
-  }
-
-  if (!form.password) {
-    e.password = 'Введите пароль';
-  } else if (form.password.length < 8) {
-    e.password = 'Минимум 8 символов';
-  }
-
-  return e;
-};
 
 const IconTrash = () => (
   <svg
@@ -57,19 +29,12 @@ const IconTrash = () => (
   </svg>
 );
 
-const Initials = ({ admin }: { admin: AdminFull }) => (
-  <div className="admins__avatar">
-    {admin.first_name[0]}
-    {admin.last_name[0]}
-  </div>
-);
-
 const AdminRow = ({ admin, onDelete }: { admin: AdminFull; onDelete: (id: number) => void }) => {
   const [confirming, setConfirming] = useState(false);
 
   return (
     <li className={`admins__row${confirming ? ' admins__row--confirming' : ''}`}>
-      <Initials admin={admin} />
+      <Avatar firstName={admin.first_name} lastName={admin.last_name} />
 
       <div className="admins__info">
         <span className="admins__name">
@@ -85,17 +50,15 @@ const AdminRow = ({ admin, onDelete }: { admin: AdminFull; onDelete: (id: number
       {admin.role !== 'superadmin' && (
         <div className="admins__actions">
           {confirming ? (
-            <>
-              <button
-                className="admins__btn-confirm"
-                onClick={() => {
-                  onDelete(admin.id);
-                  setConfirming(false);
-                }}
-              >
-                Удалить
-              </button>
-            </>
+            <button
+              className="admins__btn-confirm"
+              onClick={() => {
+                onDelete(admin.id);
+                setConfirming(false);
+              }}
+            >
+              Удалить
+            </button>
           ) : (
             <button
               className="admins__btn-delete"
@@ -161,7 +124,6 @@ export const AdminsPage = () => {
   return (
     <div className="admins">
       <div className="admins__inner">
-        {/* ── Форма добавления ── */}
         <div className="admins__card">
           <h2 className="admins__card-title">Новый администратор</h2>
 
@@ -239,7 +201,6 @@ export const AdminsPage = () => {
           </form>
         </div>
 
-        {/* ── Список администраторов ── */}
         <div className="admins__card admins__card--list">
           <div className="admins__list-header">
             <h2 className="admins__card-title">Администраторы</h2>

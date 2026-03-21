@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 
 import { loginRequest } from '@/api/auth';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/Button';
+import { Input } from '@/components/Input';
 import { useAuthStore } from '@/store/authStore';
 
 import './LoginPage.scss';

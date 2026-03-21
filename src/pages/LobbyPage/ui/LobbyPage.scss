@@ -13,15 +13,11 @@
     gap: 16px;
   }
 
-  /* ── Card base ── */
-
   %card {
     background: rgba(16, 29, 79, 0.745);
     border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: 16px;
   }
-
-  /* ── Hero ── */
 
   &__hero {
     @extend %card;
@@ -159,8 +155,6 @@
     gap: 8px;
   }
 
-  /* ── Stats ── */
-
   &__stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -171,32 +165,6 @@
     }
   }
 
-  &__stat {
-    @extend %card;
-    padding: 18px 22px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  &__stat-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--c-text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  &__stat-value {
-    font-size: 30px;
-    font-weight: 700;
-    color: var(--c-text);
-    line-height: 1;
-  }
-
-  /* ── Table card ── */
-
   &__table-card {
     @extend %card;
     padding: 24px;
@@ -205,28 +173,6 @@
     gap: 16px;
     overflow: hidden;
   }
-
-  /* ── Search ── */
-
-  &__search-field {
-    position: relative;
-
-    .ui-input {
-      padding-right: 46px;
-    }
-  }
-
-  &__search-icon {
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--c-text-muted);
-    display: flex;
-    pointer-events: none;
-  }
-
-  /* ── Table ── */
 
   &__table-wrap {
     overflow-x: auto;
@@ -274,8 +220,6 @@
     padding: 40px 0 !important;
   }
 
-  /* ── Rank badges ── */
-
   &__rank {
     display: inline-flex;
     align-items: center;
@@ -309,66 +253,6 @@
     font-weight: 600;
     color: #93c5fd;
   }
-
-  /* ── Pagination ── */
-
-  &__pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-  }
-
-  &__page-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    border: 1.5px solid rgba(255, 255, 255, 0.15);
-    background: transparent;
-    color: var(--c-text);
-    font-size: 16px;
-    cursor: pointer;
-    transition:
-      background 0.2s,
-      border-color 0.2s;
-
-    &:hover:not(:disabled) {
-      background: rgba(24, 104, 240, 0.15);
-      border-color: rgba(24, 104, 240, 0.4);
-    }
-
-    &:disabled {
-      opacity: 0.3;
-      cursor: not-allowed;
-    }
-  }
-
-  &__page-info {
-    font-size: 14px;
-    color: var(--c-text-muted);
-    min-width: 48px;
-    text-align: center;
-  }
-
-  /* ── Modal overlay (shared) ── */
-
-  &__modal-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
-
-  /* ── QR fullscreen ── */
 
   &__qr-fullscreen {
     position: relative;
@@ -416,8 +300,6 @@
       background: rgba(255, 255, 255, 0.25);
     }
   }
-
-  /* ── Winner modal ── */
 
   &__modal {
     background: rgba(16, 29, 79, 0.97);
