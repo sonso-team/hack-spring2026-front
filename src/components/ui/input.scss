@@ -27,7 +27,10 @@
     color: var(--c-text-muted);
   }
 
+  &:focus,
   &:focus-visible {
+    outline: none;
+    box-shadow: none;
     border: 1.5px solid transparent;
     background:
       linear-gradient(var(--c-bg), var(--c-bg)) padding-box,

@@ -8,13 +8,54 @@ import type { AdminFull } from '@/shared/types';
 
 import './AdminsPage.scss';
 
-const EMPTY_FORM = {
-  first_name: '',
-  last_name: '',
-  position: '',
-  email: '',
-  password: '',
+const EMPTY_FORM = { first_name: '', last_name: '', position: '', email: '', password: '' };
+type FormKey = keyof typeof EMPTY_FORM;
+type FormErrors = Partial<Record<FormKey, string>>;
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const validate = (form: typeof EMPTY_FORM): FormErrors => {
+  const e: FormErrors = {};
+
+  if (!form.last_name.trim()) {
+    e.last_name = 'Введите фамилию';
+  }
+
+  if (!form.first_name.trim()) {
+    e.first_name = 'Введите имя';
+  }
+
+  if (!form.email.trim()) {
+    e.email = 'Введите почту';
+  } else if (!EMAIL_RE.test(form.email)) {
+    e.email = 'Некорректный email';
+  }
+
+  if (!form.password) {
+    e.password = 'Введите пароль';
+  } else if (form.password.length < 8) {
+    e.password = 'Минимум 8 символов';
+  }
+
+  return e;
 };
+
+const IconTrash = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6l-1 14H6L5 6" />
+    <path d="M10 11v6M14 11v6" />
+    <path d="M9 6V4h6v2" />
+  </svg>
+);
 
 const Initials = ({ admin }: { admin: AdminFull }) => (
   <div className="admins__avatar">
@@ -54,9 +95,6 @@ const AdminRow = ({ admin, onDelete }: { admin: AdminFull; onDelete: (id: number
               >
                 Удалить
               </button>
-              <button className="admins__btn-cancel" onClick={() => setConfirming(false)}>
-                Отмена
-              </button>
             </>
           ) : (
             <button
@@ -73,28 +111,11 @@ const AdminRow = ({ admin, onDelete }: { admin: AdminFull; onDelete: (id: number
   );
 };
 
-const IconTrash = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polyline points="3 6 5 6 21 6" />
-    <path d="M19 6l-1 14H6L5 6" />
-    <path d="M10 11v6M14 11v6" />
-    <path d="M9 6V4h6v2" />
-  </svg>
-);
-
 export const AdminsPage = () => {
   const queryClient = useQueryClient();
   const [form, setForm] = useState(EMPTY_FORM);
-  const [formError, setFormError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const { data: admins = [], isLoading } = useQuery({
     queryKey: ['admins'],
@@ -106,10 +127,11 @@ export const AdminsPage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admins'] });
       setForm(EMPTY_FORM);
-      setFormError(null);
+      setErrors({});
+      setSubmitError(null);
     },
     onError: (err: { response?: { data?: { message?: string } } }) => {
-      setFormError(err.response?.data?.message ?? 'Ошибка при создании администратора');
+      setSubmitError(err.response?.data?.message ?? 'Ошибка при создании администратора');
     },
   });
 
@@ -118,16 +140,19 @@ export const AdminsPage = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admins'] }),
   });
 
-  const handleField =
-    (field: keyof typeof EMPTY_FORM) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      setForm((prev) => ({ ...prev, [field]: e.target.value }));
-      setFormError(null);
-    };
+  const handleField = (field: FormKey) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+    setSubmitError(null);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.first_name || !form.last_name || !form.email || !form.password) {
-      setFormError('Заполните обязательные поля');
+    const newErrors = validate(form);
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
     createMutation.mutate(form);
@@ -143,22 +168,28 @@ export const AdminsPage = () => {
           <form className="admins__form" onSubmit={handleSubmit} noValidate>
             <div className="admins__row-fields">
               <div className="admins__field">
-                <label className="admins__label">Фамилия *</label>
+                <label className="admins__label">Фамилия</label>
                 <Input
                   placeholder="Иванов"
                   value={form.last_name}
                   onChange={handleField('last_name')}
-                  aria-invalid={!!formError}
+                  aria-invalid={!!errors.last_name}
                 />
+                {errors.last_name && (
+                  <span className="admins__field-error">{errors.last_name}</span>
+                )}
               </div>
               <div className="admins__field">
-                <label className="admins__label">Имя *</label>
+                <label className="admins__label">Имя</label>
                 <Input
                   placeholder="Иван"
                   value={form.first_name}
                   onChange={handleField('first_name')}
-                  aria-invalid={!!formError}
+                  aria-invalid={!!errors.first_name}
                 />
+                {errors.first_name && (
+                  <span className="admins__field-error">{errors.first_name}</span>
+                )}
               </div>
             </div>
 
@@ -172,30 +203,37 @@ export const AdminsPage = () => {
             </div>
 
             <div className="admins__field">
-              <label className="admins__label">Почта *</label>
+              <label className="admins__label">Почта</label>
               <Input
                 type="email"
                 placeholder="admin@ddos-guard.net"
                 value={form.email}
                 onChange={handleField('email')}
-                aria-invalid={!!formError}
+                aria-invalid={!!errors.email}
               />
+              {errors.email && <span className="admins__field-error">{errors.email}</span>}
             </div>
 
             <div className="admins__field">
-              <label className="admins__label">Пароль *</label>
+              <label className="admins__label">Пароль</label>
               <Input
                 type="password"
                 placeholder="••••••••"
                 value={form.password}
                 onChange={handleField('password')}
-                aria-invalid={!!formError}
+                aria-invalid={!!errors.password}
               />
+              {errors.password && <span className="admins__field-error">{errors.password}</span>}
             </div>
 
-            {formError && <p className="admins__form-error">{formError}</p>}
+            {submitError && <p className="admins__form-error">{submitError}</p>}
 
-            <Button type="submit" fullWidth disabled={createMutation.isPending}>
+            <Button
+              type="submit"
+              fullWidth
+              disabled={createMutation.isPending}
+              className="admins__form-submit"
+            >
               {createMutation.isPending ? 'Добавляем...' : 'Добавить администратора'}
             </Button>
           </form>
