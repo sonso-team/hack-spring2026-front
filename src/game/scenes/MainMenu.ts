@@ -1,14 +1,18 @@
 import { GameObjects, Scene } from 'phaser';
 
 import { EventBus } from '../EventBus';
-import { VaporwaveGridBackground } from '../VaporwaveGridBackground';
+import { Background } from '../Background';
 
 export class MainMenu extends Scene
 {
-    backgroundEffect!: VaporwaveGridBackground;
+    backgroundEffect!: Background;
     logo: GameObjects.Image;
     title: GameObjects.Text;
     logoTween: Phaser.Tweens.Tween | null = null;
+    private hasStartListener = false;
+    private readonly handleStartGame = () => {
+        this.changeScene();
+    };
     private readonly handleResize = (gameSize: Phaser.Structs.Size) => {
         this.updateLayout(gameSize.width, gameSize.height);
     };
@@ -42,7 +46,7 @@ export class MainMenu extends Scene
         const verticalOffset = Math.min(height * 0.12, 84);
 
         this.cameras.main.setBackgroundColor(0x0f092b);
-        this.backgroundEffect = new VaporwaveGridBackground(this);
+        this.backgroundEffect = new Background(this);
 
         this.logo = this.add.image(centerX, centerY - verticalOffset, 'serveы').setDepth(100);
 
@@ -52,6 +56,13 @@ export class MainMenu extends Scene
             align: 'center'
         }).setOrigin(0.5).setDepth(100);
 
+        if (!this.hasStartListener)
+        {
+            EventBus.on('start-game', this.handleStartGame);
+            this.hasStartListener = true;
+        }
+
+        this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
         this.scale.on('resize', this.handleResize);
 
         EventBus.emit('current-scene-ready', this);
@@ -114,6 +125,11 @@ export class MainMenu extends Scene
     shutdown ()
     {
         this.scale.off('resize', this.handleResize);
+        if (this.hasStartListener)
+        {
+            EventBus.off('start-game', this.handleStartGame);
+            this.hasStartListener = false;
+        }
         this.backgroundEffect.destroy();
     }
 }

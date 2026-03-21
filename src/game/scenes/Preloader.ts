@@ -1,10 +1,10 @@
 import { Scene } from 'phaser';
 
-import { VaporwaveGridBackground } from '../VaporwaveGridBackground';
+import { Background } from '../Background';
 
 export class Preloader extends Scene
 {
-    backgroundEffect!: VaporwaveGridBackground;
+    backgroundEffect!: Background;
     progressOutline!: Phaser.GameObjects.Rectangle;
     progressBar!: Phaser.GameObjects.Rectangle;
     private progressValue = 0;
@@ -44,7 +44,7 @@ export class Preloader extends Scene
         const progressBarWidth = progressBoxWidth - (progressBarPadding * 2);
 
         this.cameras.main.setBackgroundColor(0x0f092b);
-        this.backgroundEffect = new VaporwaveGridBackground(this);
+        this.backgroundEffect = new Background(this);
 
         this.progressOutline = this.add.rectangle(centerX, centerY, progressBoxWidth, 32).setStrokeStyle(1, 0xffffff);
 
@@ -65,6 +65,7 @@ export class Preloader extends Scene
 
         this.load.image('server', 'characters/server-chan.png');
         this.load.image('enemy', 'characters/virus-kun.png');
+        this.load.image('dragon', 'characters/virus-kun.png');
     }
 
     create ()

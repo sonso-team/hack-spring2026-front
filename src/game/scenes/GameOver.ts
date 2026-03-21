@@ -1,11 +1,11 @@
 import { EventBus } from '../EventBus';
-import { VaporwaveGridBackground } from '../VaporwaveGridBackground';
+import { Background } from '../Background';
 import { Scene } from 'phaser';
 
 export class GameOver extends Scene
 {
     camera: Phaser.Cameras.Scene2D.Camera;
-    backgroundEffect!: VaporwaveGridBackground;
+    backgroundEffect!: Background;
     gameOverText: Phaser.GameObjects.Text;
     private readonly handleResize = (gameSize: Phaser.Structs.Size) => {
         this.updateLayout(gameSize.width, gameSize.height);
@@ -35,7 +35,7 @@ export class GameOver extends Scene
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0x0f092b);
 
-        this.backgroundEffect = new VaporwaveGridBackground(this);
+        this.backgroundEffect = new Background(this);
 
         this.gameOverText = this.add.text(centerX, centerY, 'Game Over', {
             fontFamily: 'Arial Black', fontSize: 64, color: '#ffffff',

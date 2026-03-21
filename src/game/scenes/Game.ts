@@ -1,11 +1,11 @@
 import { EventBus } from '../EventBus';
-import { VaporwaveGridBackground } from '../VaporwaveGridBackground';
+import { Background } from '../Background';
 import { Scene } from 'phaser';
 
 export class Game extends Scene
 {
     camera: Phaser.Cameras.Scene2D.Camera;
-    backgroundEffect!: VaporwaveGridBackground;
+    backgroundEffect!: Background;
     gameText: Phaser.GameObjects.Text;
     private readonly handleResize = (gameSize: Phaser.Structs.Size) => {
         this.updateLayout(gameSize.width, gameSize.height);
@@ -35,7 +35,7 @@ export class Game extends Scene
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0x0f092b);
 
-        this.backgroundEffect = new VaporwaveGridBackground(this);
+        this.backgroundEffect = new Background(this);
 
         this.gameText = this.add.text(centerX, centerY, 'Make something fun!\nand share it with us:\nsupport@phaser.io', {
             fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',

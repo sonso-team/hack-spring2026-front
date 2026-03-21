@@ -1,6 +1,6 @@
 import { Scene } from 'phaser';
 
-export class VaporwaveGridBackground
+export class Background
 {
     private readonly graphics: Phaser.GameObjects.Graphics;
     private width: number;
@@ -43,7 +43,7 @@ export class VaporwaveGridBackground
         const halfWidth = this.width / 2;
         const floorHeight = this.height - horizonY;
         const ceilingHeight = horizonY;
-        const edgeInset = Math.max(this.width * 0.025, 6);
+        const edgeInset = Math.max(this.width * 0.2, 6);
         const laneCount = Math.max(14, Math.floor(this.width / 54));
         const rowCount = Math.max(14, Math.floor(this.height / 46));
         const leftAnchorX = halfWidth - (1);
