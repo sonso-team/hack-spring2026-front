@@ -65,11 +65,11 @@ export const LobbyCreatePage = () => {
   return (
     <div className="lobby-create">
       <div className="lobby-create__card">
-        <h1 className="lobby-create__title">Создать лобби</h1>
+        <h1 className="lobby-create__title">Создать мероприятие</h1>
 
         <form className="lobby-create__form" onSubmit={handleSubmit} noValidate>
           <div className="lobby-create__field">
-            <label className="lobby-create__label">Название лобби</label>
+            <label className="lobby-create__label">Название мероприятия</label>
             <Input
               placeholder="Например: Южный ИТ-форум 2026"
               value={name}
@@ -123,7 +123,7 @@ export const LobbyCreatePage = () => {
 
           <div className="lobby-create__field">
             <label className="lobby-create__label">Длительность</label>
-            <Stepper value={durationHours} min={1} max={72} unit="ч" onChange={setDurationHours} />
+            <Stepper value={durationHours} min={1} max={144} unit="ч" onChange={setDurationHours} />
           </div>
 
           <div className="lobby-create__field">

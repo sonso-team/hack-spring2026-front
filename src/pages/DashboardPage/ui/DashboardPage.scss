@@ -88,6 +88,19 @@
       &-full {
         grid-area: results;
         grid-row: span 2;
+        padding: 36px;
+
+        .dashboard__card-title--sm {
+          font-size: 32px;
+          margin-bottom: 10px;
+        }
+
+        .dashboard__bg-icon {
+          width: 300px;
+          height: 300px;
+          top: -70px;
+          right: -30px;
+        }
       }
     }
   }
