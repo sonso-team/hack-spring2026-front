@@ -157,7 +157,6 @@ export class Game extends Scene
         const diameterRatio = Phaser.Math.Linear(mobileDiameterRatio, desktopDiameterRatio, interpolation);
         const diameter = Math.max(minDiameter, viewportWidth * diameterRatio);
 
-        // Circle: same visual size for width/height, diameter is percentage of viewport width.
         return Math.round(diameter / 2);
     }
 
@@ -165,7 +164,7 @@ export class Game extends Scene
     {
         const baseWidth = Math.max(1, this.serverSprite.width);
         const markerDiameter = markerRadius * 2;
-        const targetWidth = markerDiameter * 0.7;
+        const targetWidth = markerDiameter * 0.45;
 
         this.serverSprite.setScale(targetWidth / baseWidth);
     }
