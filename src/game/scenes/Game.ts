@@ -17,6 +17,7 @@ export class Game extends Scene
     private serverSprite!: Phaser.GameObjects.Image;
     private readonly killScore = 5;
     private maxLives = 3;
+    private isGameOverTransitioning = false;
     private readonly handlePointerDown = (pointer: Phaser.Input.Pointer) => {
         this.enemySystem.tryHitEnemy(pointer.worldX, pointer.worldY);
     };
@@ -101,7 +102,7 @@ export class Game extends Scene
                 const livesLeft = this.gameState.damageServer(1);
                 if (livesLeft <= 0)
                 {
-                    this.scene.start('GameOver');
+                    this.goToGameOver();
                 }
             }
         });
@@ -135,6 +136,7 @@ export class Game extends Scene
         this.serverSprite.destroy();
         this.centerMarker.destroy();
         this.livesText.destroy();
+        this.isGameOverTransitioning = false;
         this.gameState.setPhase('paused');
         this.backgroundEffect.destroy();
     }
@@ -205,5 +207,22 @@ export class Game extends Scene
     {
         // Keep hitbox smaller than half of sprite width so enemy visually overlaps server before impact.
         return Phaser.Math.Clamp(this.serverSprite.displayWidth * 0.38, 18, 72);
+    }
+
+    private goToGameOver ()
+    {
+        if (this.isGameOverTransitioning)
+        {
+            return;
+        }
+
+        this.isGameOverTransitioning = true;
+        this.gameState.setPhase('gameover');
+        const snapshot = this.gameState.getSnapshot();
+
+        this.scene.start('GameOver', {
+            score: snapshot.score,
+            elapsedMs: snapshot.elapsedMs
+        });
     }
 }
