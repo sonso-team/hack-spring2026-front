@@ -189,6 +189,11 @@ export class GameState
         return this.elapsedMs;
     }
 
+    getMaxLives ()
+    {
+        return this.initialLives;
+    }
+
     subscribe (listener: GameStateListener)
     {
         this.listeners.add(listener);

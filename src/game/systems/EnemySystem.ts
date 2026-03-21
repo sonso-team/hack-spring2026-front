@@ -14,10 +14,12 @@ interface EnemySystemOptions
     inwardBias?: number;
     turnResponsiveness?: number;
     maxDriftFactor?: number;
+    firewallRadius?: number;
     serverHitRadius?: number;
     enemyWidthDesktopPx?: number;
     enemyWidthTabletPx?: number;
     enemyWidthMobilePx?: number;
+    onEnemyDestroyed?: (enemyId: string) => void;
     onEnemyReachedServer?: (enemyId: string) => void;
 }
 
@@ -30,6 +32,9 @@ interface EnemyRuntime
     driftFactor: number;
     turnTimerMs: number;
     syncTimerMs: number;
+    inFirewall: boolean;
+    enteredFirewallAtMs: number | null;
+    tapRadius: number;
 }
 
 const MAX_DELTA_MS = 250;
@@ -37,7 +42,9 @@ const POSITION_SYNC_INTERVAL_MS = 100;
 
 export class EnemySystem
 {
-    private readonly options: Required<Omit<EnemySystemOptions, 'onEnemyReachedServer'>> & Pick<EnemySystemOptions, 'onEnemyReachedServer'>;
+    private readonly options:
+        Required<Omit<EnemySystemOptions, 'onEnemyDestroyed' | 'onEnemyReachedServer'>>
+        & Pick<EnemySystemOptions, 'onEnemyDestroyed' | 'onEnemyReachedServer'>;
     private readonly enemies = new Map<string, EnemyRuntime>();
     private width: number;
     private height: number;
@@ -63,10 +70,12 @@ export class EnemySystem
             inwardBias: options.inwardBias ?? 0.82,
             turnResponsiveness: options.turnResponsiveness ?? 7.2,
             maxDriftFactor: options.maxDriftFactor ?? 3.42,
+            firewallRadius: options.firewallRadius ?? 120,
             serverHitRadius: options.serverHitRadius ?? 56,
             enemyWidthDesktopPx: options.enemyWidthDesktopPx ?? 58,
             enemyWidthTabletPx: options.enemyWidthTabletPx ?? 50,
             enemyWidthMobilePx: options.enemyWidthMobilePx ?? 42,
+            onEnemyDestroyed: options.onEnemyDestroyed,
             onEnemyReachedServer: options.onEnemyReachedServer
         };
 
@@ -87,6 +96,51 @@ export class EnemySystem
     {
         const safeRadius = Number.isFinite(radius) ? Math.max(4, radius) : this.options.serverHitRadius;
         this.options.serverHitRadius = safeRadius;
+    }
+
+    setFirewallRadius (radius: number)
+    {
+        const safeRadius = Number.isFinite(radius) ? Math.max(8, radius) : this.options.firewallRadius;
+        this.options.firewallRadius = safeRadius;
+    }
+
+    tryHitEnemy (worldX: number, worldY: number)
+    {
+        if (this.gameState.getPhase() !== 'running')
+        {
+            return false;
+        }
+
+        let selectedEnemy: EnemyRuntime | null = null;
+        let selectedDistance = Number.POSITIVE_INFINITY;
+
+        for (const enemy of this.enemies.values())
+        {
+            if (!enemy.inFirewall)
+            {
+                continue;
+            }
+
+            const distance = PhaserMath.Distance.Between(worldX, worldY, enemy.sprite.x, enemy.sprite.y);
+            if (distance > enemy.tapRadius)
+            {
+                continue;
+            }
+
+            if (distance < selectedDistance)
+            {
+                selectedDistance = distance;
+                selectedEnemy = enemy;
+            }
+        }
+
+        if (!selectedEnemy)
+        {
+            return false;
+        }
+
+        this.resolveEnemyDestroyed(selectedEnemy);
+        return true;
     }
 
     update (deltaMs: number)
@@ -165,7 +219,10 @@ export class EnemySystem
             speed,
             driftFactor,
             turnTimerMs: PhaserMath.Between(this.options.turnIntervalMinMs, this.options.turnIntervalMaxMs),
-            syncTimerMs: 0
+            syncTimerMs: 0,
+            inFirewall: false,
+            enteredFirewallAtMs: null,
+            tapRadius: this.getEnemyTapRadius(sprite.displayWidth)
         };
 
         this.enemies.set(id, runtimeEnemy);
@@ -203,6 +260,13 @@ export class EnemySystem
                 continue;
             }
 
+            const wasInFirewall = enemy.inFirewall;
+            enemy.inFirewall = distanceToCenter <= this.options.firewallRadius;
+            if (enemy.inFirewall && !wasInFirewall)
+            {
+                enemy.enteredFirewallAtMs = this.gameState.getElapsedMs();
+            }
+
             const toCenterNormalized = distanceToCenter > 0 ? toCenter.scale(1 / distanceToCenter) : new PhaserMath.Vector2(0, 1);
             const desiredDirection = this.composeDirection(toCenterNormalized, enemy.driftFactor);
             const currentDirection = enemy.velocity.clone().normalize();
@@ -220,10 +284,26 @@ export class EnemySystem
                 this.gameState.patchEnemy(enemy.id, {
                     x: enemy.sprite.x,
                     y: enemy.sprite.y,
-                    state: 'approaching'
+                    state: enemy.inFirewall ? 'in_firewall' : 'approaching',
+                    enteredFirewallAtMs: enemy.enteredFirewallAtMs
                 });
             }
         }
+    }
+
+    private resolveEnemyDestroyed (enemy: EnemyRuntime)
+    {
+        this.gameState.patchEnemy(enemy.id, {
+            x: enemy.sprite.x,
+            y: enemy.sprite.y,
+            state: 'dead',
+            enteredFirewallAtMs: enemy.enteredFirewallAtMs
+        });
+        this.gameState.removeEnemy(enemy.id);
+        this.enemies.delete(enemy.id);
+        enemy.sprite.destroy();
+
+        this.options.onEnemyDestroyed?.(enemy.id);
     }
 
     private resolveEnemyReachedServer (enemy: EnemyRuntime)
@@ -231,7 +311,8 @@ export class EnemySystem
         this.gameState.patchEnemy(enemy.id, {
             x: enemy.sprite.x,
             y: enemy.sprite.y,
-            state: 'hit_server'
+            state: 'hit_server',
+            enteredFirewallAtMs: enemy.enteredFirewallAtMs
         });
         this.gameState.removeEnemy(enemy.id);
         this.enemies.delete(enemy.id);
@@ -281,5 +362,10 @@ export class EnemySystem
         }
 
         return this.options.enemyWidthDesktopPx;
+    }
+
+    private getEnemyTapRadius (displayWidth: number)
+    {
+        return Math.max(14, displayWidth * 0.5);
     }
 }
