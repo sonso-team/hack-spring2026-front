@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 
@@ -86,6 +86,7 @@ const Stepper = ({ value, min = 1, max, unit, onChange, hasError }: StepperProps
 
 export const LobbyCreatePage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [name, setName] = useState('');
   const [game, setGame] = useState<GameType>('ddos_ninja');
@@ -101,7 +102,10 @@ export const LobbyCreatePage = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: createLobby,
-    onSuccess: () => navigate('/lobby'),
+    onSuccess: (data) => {
+      queryClient.setQueryData(['lobby'], data);
+      navigate('/lobby');
+    },
     onError: (err: Error) => {
       setFormError(err.message || 'Не удалось создать лобби');
     },

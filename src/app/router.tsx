@@ -6,6 +6,7 @@ import { Wrapper } from '@/components/Wrapper';
 import { AdminsPage } from '@/pages/AdminsPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { LobbyCreatePage } from '@/pages/LobbyCreatePage';
+import { LobbyPage } from '@/pages/LobbyPage';
 import { LoginPage } from '@/pages/LoginPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 
@@ -23,6 +24,7 @@ export const router = createBrowserRouter([
           { path: '/', element: <DashboardPage /> },
           { path: '/admins', element: <AdminsPage /> },
           { path: '/lobby/create', element: <LobbyCreatePage /> },
+          { path: '/lobby', element: <LobbyPage /> },
           { path: '*', element: <NotFoundPage /> },
         ],
       },
