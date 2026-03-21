@@ -35,20 +35,7 @@ export const mockCredentials: Record<string, { token: string; adminId: number }>
   'manager@ddos-guard.net': { token: MOCK_TOKEN_ADMIN, adminId: 2 },
 };
 
-let _lobby: Lobby | null = {
-  id: 1,
-  name: 'DDoS Ninja: Хакатон 2026',
-  game: 'ddos_ninja',
-  difficulty: 'medium',
-  duration_minutes: 5,
-  max_attempts: 1,
-  game_over_text: 'Спасибо за участие! Ждите результатов на стенде DDoS-Guard.',
-  status: 'active',
-  invite_code: 'HACK2026',
-  players_count: 12,
-  created_at: new Date(Date.now() - 3_600_000).toISOString(),
-  closed_at: null,
-};
+let _lobby: Lobby | null = null;
 
 let _nextAdminId = 4;
 

@@ -193,11 +193,6 @@
     padding: 5px 13px;
     border-radius: 20px;
 
-    @media (max-width: 1000px) {
-      font-size: 10px;
-      padding: 3px 8px;
-    }
-
     &--superadmin {
       background: #f59e0b;
       color: #1a0f00;
@@ -206,6 +201,11 @@
     &--admin {
       background: #1868f0;
       color: #fff;
+    }
+
+    @media (max-width: 1000px) {
+      font-size: 10px;
+      padding: 3px 8px;
     }
   }
 
@@ -250,11 +250,6 @@
     font-weight: 700;
     padding: 5px 13px;
     border-radius: 20px;
-
-    @media (max-width: 1000px) {
-      font-size: 10px;
-      padding: 3px 8px;
-    }
     border: none;
     background: #ef4444;
     color: #fff;
@@ -265,6 +260,11 @@
     &:hover {
       background: #dc2626;
     }
+
+    @media (max-width: 1000px) {
+      font-size: 10px;
+      padding: 3px 8px;
+    }
   }
 
   &__btn-cancel {
@@ -272,11 +272,6 @@
     font-weight: 600;
     padding: 5px 13px;
     border-radius: 20px;
-
-    @media (max-width: 1000px) {
-      font-size: 10px;
-      padding: 3px 8px;
-    }
     border: none;
     background: rgba(255, 255, 255, 0.12);
     color: var(--c-text);
@@ -286,6 +281,11 @@
 
     &:hover {
       background: rgba(255, 255, 255, 0.2);
+    }
+
+    @media (max-width: 1000px) {
+      font-size: 10px;
+      padding: 3px 8px;
     }
   }
 
