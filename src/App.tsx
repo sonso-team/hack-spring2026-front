@@ -7,8 +7,11 @@ function App()
 {
     const phaserRef = useRef<IRefPhaserGame | null>(null);
     const [isIntroOpen, setIsIntroOpen] = useState(true);
+    const [activeSceneKey, setActiveSceneKey] = useState<string>('');
 
-    const currentScene = (_scene: Phaser.Scene) => {};
+    const currentScene = (scene: Phaser.Scene) => {
+        setActiveSceneKey(scene.scene.key);
+    };
 
     const handleStartGame = () =>
     {
@@ -22,6 +25,8 @@ function App()
 
         game.scene.start('Game');
     };
+
+    const isMainMenuStartVisible = !isIntroOpen && activeSceneKey === 'MainMenu';
 
     return (
         <div id="app">
@@ -52,6 +57,13 @@ function App()
                                 Начать
                             </button>
                         </section>
+                    </div>
+                )}
+                {isMainMenuStartVisible && (
+                    <div className="menu-start-overlay">
+                        <button className="menu-start-button" onClick={handleStartGame} type="button">
+                            Начать
+                        </button>
                     </div>
                 )}
             </Layout>
