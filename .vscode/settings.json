@@ -1,0 +1,13 @@
+{
+  // === форматирование ===
+  "editor.formatOnSave": true,
+  // === eslint-фиксы и автоимпорты на save ===
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "always",
+    "source.fixAll.eslint": "always",
+    "source.organizeImports": "always"
+  },
+  "[scss]": {
+    "editor.formatOnSave": false // вообще не форматировать SCSS
+  }
+}

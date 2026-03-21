@@ -1,0 +1,19 @@
+// tsconfig.eslint.json
+{
+  "extends": "./tsconfig.app.json",
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "vite-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "vite.config.ts",
+    "eslint.config.js",
+    "**/*.config.ts",
+  ]
+}
