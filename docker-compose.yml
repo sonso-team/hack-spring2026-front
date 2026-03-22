@@ -4,25 +4,25 @@ services:
       context: ./apps/game
       dockerfile: Dockerfile
     ports:
-      - "5173:5173"
+      - "5174:5174"
     volumes:
       - ./apps/game:/app
       - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
-      - API_TARGET=http://hack-spring2026-api:8800
-      - WS_TARGET=ws://hack-spring2026-api:8800
+      - API_TARGET=https://hack.kinoko.su
+      - WS_TARGET=wss://hack.kinoko.su
 
   admin:
     build:
       context: ./apps/admin-panel
       dockerfile: Dockerfile
     ports:
-      - "5174:5173"
+      - "5173:5173"
     volumes:
       - ./apps/admin-panel:/app
       - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
-      - API_TARGET=http://hack-spring2026-api:8800
+      - API_TARGET=https://hack.kinoko.su
 
