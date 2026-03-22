@@ -60,10 +60,10 @@ export function App ()
     });
 
     const { mutate: mutateFinish } = useMutation({
-        mutationFn: () =>
+        mutationFn: async () =>
         {
-            if (!session) return Promise.resolve();
-            return finishGame(session.session_token, gameOverData.score);
+            if (!session) return;
+            await finishGame(session.session_token, gameOverData.score);
         },
     });
 
@@ -109,7 +109,7 @@ export function App ()
             {step === 'gameover' && (
                 <GameOverScreen
                     bottomText="Узнавай первым о новых продуктах и мероприятиях DDoS-Guard. Подписывайся на наши соцсети."
-                    canRestart={true}
+                    canRestart={(user?.attempts_left ?? 0) > 0}
                     description=""
                     onRestart={handleRestart}
                     scoreCaption="Итоговый счёт"
