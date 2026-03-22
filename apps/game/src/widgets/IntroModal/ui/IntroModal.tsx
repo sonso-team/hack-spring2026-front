@@ -5,9 +5,10 @@ import './intro-modal.scss';
 interface IntroModalProps
 {
     onStart: () => void;
+    isPending?: boolean;
 }
 
-export function IntroModal ({ onStart }: IntroModalProps)
+export function IntroModal ({ onStart, isPending = false }: IntroModalProps)
 {
     return (
         <Layout>
@@ -24,10 +25,10 @@ export function IntroModal ({ onStart }: IntroModalProps)
                         <div className="intro-modal__description" id="game-intro-description">
                             <p>Уничтожай вредоносные запросы, нажимая на них в зоне файрвола. Пропустил — сервер получает урон.</p>
                         </div>
-                        <p className="intro-modal__footer">Продержись как можно дольше!</p>
+                        <p className="intro-modal__footer">Удачи, защитник!</p>
                     </div>
-                    <Button className="intro-modal__action" onClick={onStart}>
-                        Начать
+                    <Button className="intro-modal__action" onClick={isPending ? undefined : onStart}>
+                        {isPending ? 'Загружаем…' : 'Начать'}
                     </Button>
                 </section>
             </div>

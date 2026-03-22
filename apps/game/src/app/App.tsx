@@ -1,9 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { PhaserGame } from '../shared/phaser/PhaserGame';
 import type { PhaserGameRef } from '../shared/phaser/types';
 import { IntroModal } from '../widgets/IntroModal';
 import { GameOverScreen } from '../widgets/GameOverScreen';
+import { WelcomeScreen } from '../widgets/WelcomeScreen/ui/WelcomeScreen';
+import { RegistrationForm } from '../widgets/RegistrationForm/ui/RegistrationForm';
 import { EventBus } from '../game/core/EventBus';
+import { startGame, finishGame } from '../shared/api';
+import { useGameStore } from '../store/gameStore';
+
+type AppStep = 'welcome' | 'register' | 'rules' | 'playing' | 'gameover';
+
+const inviteCode = new URLSearchParams(window.location.search).get('invite_code') ?? '';
 
 interface GameOverPayload
 {
@@ -13,10 +22,13 @@ interface GameOverPayload
 
 export function App ()
 {
-    const phaserRef   = useRef<PhaserGameRef>(null);
-    const [isIntroOpen, setIsIntroOpen]       = useState(true);
+    const phaserRef = useRef<PhaserGameRef>(null);
+    const [step, setStep]               = useState<AppStep>('welcome');
     const [activeSceneKey, setActiveSceneKey] = useState('');
     const [gameOverData, setGameOverData]     = useState<GameOverPayload>({ score: 0, elapsedMs: 0 });
+    const finishCalled = useRef(false);
+
+    const { user, session, setSession } = useGameStore();
 
     useEffect(() =>
     {
@@ -24,27 +36,51 @@ export function App ()
         return () => { EventBus.off('game-over-data', setGameOverData); };
     }, []);
 
-    const startScene = (key: string) =>
+    // Trigger finish when game-over scene activates
+    useEffect(() =>
     {
-        const { game, scene } = phaserRef.current ?? {};
-        if (scene) { scene.scene.start(key); }
-        else       { game?.scene.start(key); }
-        setActiveSceneKey(key);
-    };
+        if (activeSceneKey === 'GameOver' && step !== 'gameover')
+        {
+            setStep('gameover');
+        }
+    }, [activeSceneKey, step]);
 
-    const handleStart = () =>
+    const { mutate: mutateStart, isPending: isStartPending } = useMutation({
+        mutationFn: () => startGame(user!.player_id),
+        onSuccess: (data) =>
+        {
+            setSession(data);
+            finishCalled.current = false;
+            const { game, scene } = phaserRef.current ?? {};
+            if (scene) scene.scene.start('Game');
+            else game?.scene.start('Game');
+            setActiveSceneKey('Game');
+            setStep('playing');
+        },
+    });
+
+    const { mutate: mutateFinish } = useMutation({
+        mutationFn: () =>
+        {
+            if (!session) return Promise.resolve();
+            return finishGame(session.session_token, gameOverData.score);
+        },
+    });
+
+    useEffect(() =>
     {
-        setIsIntroOpen(false);
-        startScene('Game');
-    };
+        if (step === 'gameover' && !finishCalled.current)
+        {
+            finishCalled.current = true;
+            mutateFinish();
+        }
+    }, [step, mutateFinish]);
 
     const handleRestart = () =>
     {
-        setIsIntroOpen(false);
-        startScene('Game');
+        finishCalled.current = false;
+        setStep('rules');
     };
-
-    const isGameOver = activeSceneKey === 'GameOver';
 
     return (
         <div id="app">
@@ -52,15 +88,29 @@ export function App ()
                 <PhaserGame ref={phaserRef} onSceneChange={setActiveSceneKey} />
             </div>
 
-            {isIntroOpen && !isGameOver && (
-                <IntroModal onStart={handleStart} />
+            {step === 'welcome' && (
+                <WelcomeScreen onDone={() => setStep('register')} />
             )}
 
-            {isGameOver && (
+            {step === 'register' && (
+                <RegistrationForm
+                    inviteCode={inviteCode}
+                    onSuccess={() => setStep('rules')}
+                />
+            )}
+
+            {step === 'rules' && (
+                <IntroModal
+                    onStart={() => mutateStart()}
+                    isPending={isStartPending}
+                />
+            )}
+
+            {step === 'gameover' && (
                 <GameOverScreen
                     bottomText="Узнавай первым о новых продуктах и мероприятиях DDoS-Guard. Подписывайся на наши соцсети."
                     canRestart={true}
-                    description="Тут типо какой-то текст который через пропсы прокидывается создателем лобби типа адуреть ты крутой перец выиграй пачку кириешек с диким огурцом"
+                    description=""
                     onRestart={handleRestart}
                     scoreCaption="Итоговый счёт"
                     scoreValue={gameOverData.score}
