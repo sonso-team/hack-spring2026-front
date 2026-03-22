@@ -19,4 +19,10 @@ export default defineConfig({
             format: { comments: false },
         },
     },
+    server: {
+        port: 5000,
+        host: true,
+        allowedHosts: ["hack.kinoko.su"],
+        
+    },
 });

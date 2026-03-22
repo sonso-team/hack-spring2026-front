@@ -11,16 +11,6 @@ export default defineConfig({
     },
   },
   server: {
-    proxy: {
-      '/api': {
-        target: process.env.API_TARGET ?? 'http://localhost:8800',
-        changeOrigin: true,
-      },
-      '/ws': {
-        target: process.env.WS_TARGET ?? 'ws://localhost:8800',
-        ws: true,
-        changeOrigin: true,
-      },
-    },
+    allowedHosts: ["hack.kinoko.su"],
   },
 });
