@@ -110,7 +110,7 @@ export function App ()
                 <GameOverScreen
                     bottomText="Узнавай первым о новых продуктах и мероприятиях DDoS-Guard. Подписывайся на наши соцсети."
                     canRestart={(user?.attempts_left ?? 0) > 1}
-                    description=""
+                    description="Спасибо за игру! Ждем Вас в наших социальных сетях!"
                     onRestart={handleRestart}
                     scoreCaption="Итоговый счёт"
                     scoreValue={gameOverData.score}
@@ -119,6 +119,7 @@ export function App ()
                     vkText="Мы в Вконтакте"
                     vkHref={`https://vk.com/ddosguard`}
                     telegramHref={`https://telegram.me/ddos_guard`}
+                    logoSrc={`${import.meta.env.BASE_URL}assets/logo/logo.svg`}
                 />
             )}
         </div>
