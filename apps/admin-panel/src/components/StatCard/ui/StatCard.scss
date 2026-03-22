@@ -1,0 +1,25 @@
+.stat-card {
+  background: rgba(16, 29, 79, 0.745);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &__label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--c-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__value {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--c-text);
+    line-height: 1;
+  }
+}

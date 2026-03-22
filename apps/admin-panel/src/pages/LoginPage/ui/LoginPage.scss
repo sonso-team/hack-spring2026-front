@@ -1,0 +1,74 @@
+.login {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__logo {
+    position: absolute;
+    top: 32px;
+    left: 40px;
+
+    @media (max-width: 640px) {
+      left: 24px;
+      top: 24px;
+    }
+  }
+
+  &__logo-img {
+    height: 34px;
+    width: auto;
+  }
+
+  &__mascot {
+    display: none;
+    position: fixed;
+    bottom: -32vh;
+    right: -12vh;
+    height: 100vh;
+    max-height: 1280px;
+    width: auto;
+    pointer-events: none;
+    user-select: none;
+    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+
+    @media (min-width: 1024px) {
+      display: block;
+    }
+  }
+
+  &__form {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 340px;
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    @media (min-width: 1024px) {
+      padding: 0;
+    }
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--c-text);
+  }
+
+  &__error {
+    font-size: 13px;
+    color: var(--c-danger);
+    text-align: center;
+    min-height: 18px;
+  }
+}

@@ -1,0 +1,58 @@
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes spin-border {
+  to {
+    --border-angle: 360deg;
+  }
+}
+
+.ui-input {
+  display: flex;
+  width: 100%;
+  background: transparent;
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--r-md);
+  padding: 14px 18px;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--c-text);
+  outline: none;
+  transition: border-color 0.2s;
+
+  &::placeholder {
+    color: var(--c-text-muted);
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    box-shadow: none;
+    border: 1.5px solid transparent;
+    background:
+      linear-gradient(var(--c-bg), var(--c-bg)) padding-box,
+      conic-gradient(
+          from var(--border-angle),
+          rgba(24, 104, 240, 0.12),
+          #1868f0 25%,
+          #93c5fd 50%,
+          #1868f0 75%,
+          rgba(24, 104, 240, 0.12)
+        )
+        border-box;
+    animation: spin-border 2.5s linear infinite;
+  }
+
+  &[aria-invalid='true'] {
+    border-color: var(--c-danger);
+    animation: none;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
