@@ -117,6 +117,8 @@ export function App ()
                     telegramText="Мы в Телеграм"
                     title="Игра окончена!"
                     vkText="Мы в Вконтакте"
+                    vkHref={`https://vk.com/ddosguard`}
+                    telegramHref={`https://telegram.me/ddos_guard`}
                 />
             )}
         </div>

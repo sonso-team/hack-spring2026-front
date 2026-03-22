@@ -44,7 +44,7 @@ export function VkSocialPill(props: SocialPillProps)
     return (
         <SocialPill
             iconAlt="ВКонтакте"
-            iconSrc="/assets/icons/vk.svg"
+            iconSrc="public/assets/icons/vk.svg"
             modifier="vk"
             {...props}
         />
@@ -56,7 +56,7 @@ export function TelegramSocialPill(props: SocialPillProps)
     return (
         <SocialPill
             iconAlt="Telegram"
-            iconSrc="/assets/icons/telegram.svg"
+            iconSrc="public/assets/icons/telegram.svg"
             modifier="telegram"
             {...props}
         />
