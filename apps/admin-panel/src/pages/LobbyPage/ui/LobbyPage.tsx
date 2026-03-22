@@ -49,7 +49,7 @@ export const LobbyPage = () => {
     }
   }, [lobbyLoading, lobby, navigate]);
 
-  const playerLink = lobby ? `https://hack.kinoko.su/game?invite_code=${lobby.invite_code}` : '';
+  const playerLink = lobby ? `https://hack.kinoko.su/game/game?invite_code=${lobby.invite_code}` : '';
 
   useEffect(() => {
     if (!playerLink) {
