@@ -93,9 +93,6 @@ export class Background
             const x = mirror
                 ? anchorX + (span * normalized)
                 : anchorX - (span * normalized);
-            // const alpha = 0.14 + ((1 - normalized) * 0.26);
-
-            // this.graphics.lineStyle(1.3, this.gridColor, alpha);
             this.graphics.lineBetween(anchorX, this.height * 0.5, x, this.height);
             this.graphics.lineBetween(anchorX, this.height * 0.5, x, 0);
         }

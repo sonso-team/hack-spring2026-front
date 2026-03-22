@@ -45,7 +45,6 @@ function App()
         const activeScene = phaserRef.current?.scene;
         if (activeScene)
         {
-            // ScenePlugin.start stops the currently bound scene before starting next one.
             activeScene.scene.start(sceneKey);
         }
         else

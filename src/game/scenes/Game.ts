@@ -133,7 +133,7 @@ export class Game extends Scene
             }
         });
 
-        this.input.addPointer(9); // support up to 10 simultaneous touches
+        this.input.addPointer(9);
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdown, this);
         this.input.on(Phaser.Input.Events.POINTER_DOWN, this.handlePointerDown);
         this.scale.on('resize', this.handleResize);
@@ -157,7 +157,7 @@ export class Game extends Scene
     private tickMultiplier ()
     {
         const elapsed = this.gameState.getElapsedMs();
-        const next = elapsed >= 180_000 ? 4 : elapsed >= 120_000 ? 3 : elapsed >= 60_000 ? 2 : 1;
+        const next = elapsed >= 210_000 ? 4 : elapsed >= 150_000 ? 3 : elapsed >= 90_000 ? 2 : 1;
 
         if (next !== this.scoreMultiplier)
         {
@@ -203,7 +203,6 @@ export class Game extends Scene
 
     changeScene ()
     {
-        // Reserved for explicit game-over flow once combat systems are implemented.
     }
 
     shutdown ()
@@ -281,7 +280,7 @@ export class Game extends Scene
     {
         const baseWidth = Math.max(1, this.serverSprite.width);
         const markerDiameter = markerRadius * 2;
-        const targetWidth = markerDiameter * 0.3; //тут меняется размер сервака
+        const targetWidth = markerDiameter * 0.3;
 
         this.serverSprite.setScale(targetWidth / baseWidth);
     }

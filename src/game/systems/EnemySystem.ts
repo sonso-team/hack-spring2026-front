@@ -24,34 +24,30 @@ interface EnemySystemOptions
     onEnemyReachedServer?: (enemyId: string) => void;
 }
 
-// ─── Per-type configuration ───────────────────────────────────────────────────
-
 interface EnemyTypeConfig
 {
     textureKey: string;
-    hp: number;       // minimum HP (also fixed HP for 1-HP types)
-    hpMax: number;    // maximum HP — randomised at spawn; equals hp for fixed-HP types
+    hp: number;
+    hpMax: number;
     speedMultiplier: number;
-    sizeMultiplier: number;       // relative to base red size
-    tapRadiusMultiplier: number;  // hitbox = max(14, displayWidth * this)
-    tint: number | null;          // null = no tint (types use own textures)
-    // hitTints[hp - 1] = tint applied after a hit when that many HP remain
+    sizeMultiplier: number;
+    tapRadiusMultiplier: number;
+    tint: number | null;
     hitTints: number[];
     deathFlashColor: number;
     deathRingColor: number;
     deathBitPalette: string[];
-    deathBurstScale: number;   // explosion size multiplier
-    deathDuration: number;     // animation duration multiplier
-    deathSpriteColor: number;  // tintFill applied to sprite on death
-    // Trail — dark comet-tail line with 0/1 glyphs along it
-    trailLineColor: number;        // hex colour of the dark background line
-    trailLineWidth: number;        // thickness of the line in px
-    trailGlyphColor: string;       // CSS colour of the 0/1 glyphs
-    trailGlyphFontSize: number;    // px font size of the glyphs
-    trailSampleIntervalMs: number; // ms between position samples
-    trailMaxSamples: number;       // buffer size — controls visual trail length
-    trailGlyphCount: number;       // how many glyphs sit along the trail (= rows × columns)
-    trailRowCount: number;         // 2 or 3 rows of glyphs across the band
+    deathBurstScale: number;
+    deathDuration: number;
+    deathSpriteColor: number;
+    trailLineColor: number;
+    trailLineWidth: number;
+    trailGlyphColor: string;
+    trailGlyphFontSize: number;
+    trailSampleDistPx: number;
+    trailMaxSamples: number;
+    trailGlyphCount: number;
+    trailRowCount: number;
 }
 
 const ENEMY_TYPE_CONFIG: Record<EnemyType, EnemyTypeConfig> = {
@@ -74,7 +70,7 @@ const ENEMY_TYPE_CONFIG: Record<EnemyType, EnemyTypeConfig> = {
         trailLineWidth: 31,
         trailGlyphColor: '#cc1122',
         trailGlyphFontSize: 14,
-        trailSampleIntervalMs: 35,
+        trailSampleDistPx: 5,
         trailMaxSamples: 20,
         trailGlyphCount: 18,
         trailRowCount: 3
@@ -85,7 +81,7 @@ const ENEMY_TYPE_CONFIG: Record<EnemyType, EnemyTypeConfig> = {
         hpMax: 1,
         speedMultiplier: 2.4,
         sizeMultiplier: 0.65,
-        tapRadiusMultiplier: 1.3,  // bigger hitbox — these little guys are hard to tap
+        tapRadiusMultiplier: 1.3,
         tint: null,
         hitTints: [],
         deathFlashColor: 0x44ff66,
@@ -98,7 +94,7 @@ const ENEMY_TYPE_CONFIG: Record<EnemyType, EnemyTypeConfig> = {
         trailLineWidth: 22,
         trailGlyphColor: '#22cc44',
         trailGlyphFontSize: 11,
-        trailSampleIntervalMs: 25,
+        trailSampleDistPx: 4,
         trailMaxSamples: 10,
         trailGlyphCount: 8,
         trailRowCount: 2
@@ -106,12 +102,11 @@ const ENEMY_TYPE_CONFIG: Record<EnemyType, EnemyTypeConfig> = {
     blue: {
         textureKey: 'big-bro',
         hp: 3,
-        hpMax: 6,  // randomised per-spawn between hp and hpMax
+        hpMax: 6,
         speedMultiplier: 0.456,
         sizeMultiplier: 1.35,
         tapRadiusMultiplier: 0.65,
         tint: null,
-        // hitTints: index 0 = 1 HP left (critical red), higher indices = intermediate damage tints
         hitTints: [0xff4466, 0xff8899, 0xbbddff, 0x99ddff, 0xcceeff],
         deathFlashColor: 0x44aaff,
         deathRingColor: 0x2288ee,
@@ -123,7 +118,7 @@ const ENEMY_TYPE_CONFIG: Record<EnemyType, EnemyTypeConfig> = {
         trailLineWidth: 62,
         trailGlyphColor: '#4499ff',
         trailGlyphFontSize: 17,
-        trailSampleIntervalMs: 45,
+        trailSampleDistPx: 5,
         trailMaxSamples: 43,
         trailGlyphCount: 21,
         trailRowCount: 3
@@ -147,14 +142,12 @@ const ENEMY_TYPE_CONFIG: Record<EnemyType, EnemyTypeConfig> = {
         trailLineWidth: 42,
         trailGlyphColor: '#ff8800',
         trailGlyphFontSize: 13,
-        trailSampleIntervalMs: 35,
+        trailSampleDistPx: 5,
         trailMaxSamples: 18,
         trailGlyphCount: 18,
         trailRowCount: 3
     }
 };
-
-// ─── Difficulty stages ─────────────────────────────────────────────────────────
 
 interface DifficultyStage
 {
@@ -168,7 +161,7 @@ interface DifficultyStage
 }
 
 const DIFFICULTY_STAGES: DifficultyStage[] = [
-    {   // 0 – 15 s : tutorial, only red
+    {
         fromMs: 0,
         maxEnemies: 5,
         minSpawnIntervalMs: 1200,
@@ -177,7 +170,7 @@ const DIFFICULTY_STAGES: DifficultyStage[] = [
         maxSpeed: 70,
         typeWeights: { red: 1 }
     },
-    {   // 15 – 40 s : blue joins
+    {
         fromMs: 15_000,
         maxEnemies: 6,
         minSpawnIntervalMs: 1400,
@@ -186,7 +179,7 @@ const DIFFICULTY_STAGES: DifficultyStage[] = [
         maxSpeed: 80,
         typeWeights: { red: 4, blue: 1 }
     },
-    {   // 40 – 80 s : greens join
+    {
         fromMs: 40_000,
         maxEnemies: 7,
         minSpawnIntervalMs: 1100,
@@ -195,7 +188,7 @@ const DIFFICULTY_STAGES: DifficultyStage[] = [
         maxSpeed: 90,
         typeWeights: { red: 3, blue: 2, green: 1 }
     },
-    {   // 80 – 120 s : splitters join (×2 mult kicks in at 90 s)
+    {
         fromMs: 80_000,
         maxEnemies: 8,
         minSpawnIntervalMs: 850,
@@ -204,7 +197,7 @@ const DIFFICULTY_STAGES: DifficultyStage[] = [
         maxSpeed: 102,
         typeWeights: { red: 3, blue: 2, green: 2, orange: 1 }
     },
-    {   // 120 – 180 s : ramping hard
+    {
         fromMs: 120_000,
         maxEnemies: 10,
         minSpawnIntervalMs: 600,
@@ -213,7 +206,7 @@ const DIFFICULTY_STAGES: DifficultyStage[] = [
         maxSpeed: 116,
         typeWeights: { red: 3, blue: 2, green: 2, orange: 1 }
     },
-    {   // 180 s+ : penetration mode (×3 mult kicks in at 150 s)
+    {
         fromMs: 180_000,
         maxEnemies: 13,
         minSpawnIntervalMs: 350,
@@ -223,8 +216,6 @@ const DIFFICULTY_STAGES: DifficultyStage[] = [
         typeWeights: { red: 3, blue: 2, green: 3, orange: 2 }
     }
 ];
-
-// ─── Runtime types ────────────────────────────────────────────────────────────
 
 interface EnemyRuntime
 {
@@ -241,17 +232,15 @@ interface EnemyRuntime
     inFirewall: boolean;
     enteredFirewallAtMs: number | null;
     tapRadius: number;
-    frozenUntilMs: number;                           // game-time ms until which movement is suppressed
-    trailSampleTimerMs: number;                      // countdown to next position sample
-    trailPositions: { x: number; y: number }[];      // ring buffer of recent world positions
-    trailGraphics: GameObjects.Graphics;             // the dark comet-tail line
-    trailGlyphs: GameObjects.Text[];                 // fixed pool of 0/1 text objects along the trail
+    frozenUntilMs: number;
+    trailDistAccum: number;
+    trailPositions: { x: number; y: number }[];
+    trailGraphics: GameObjects.Graphics;
+    trailGlyphs: GameObjects.Text[];
 }
 
 const MAX_DELTA_MS = 250;
 const POSITION_SYNC_INTERVAL_MS = 100;
-
-// ─── EnemySystem ──────────────────────────────────────────────────────────────
 
 export class EnemySystem
 {
@@ -397,8 +386,6 @@ export class EnemySystem
         this.gameState.clearEnemies();
     }
 
-    // ─── Spawn ────────────────────────────────────────────────────────────────
-
     private tickSpawn (deltaMs: number)
     {
         this.spawnTimerMs -= deltaMs;
@@ -411,12 +398,20 @@ export class EnemySystem
         this.trySpawnEnemy();
     }
 
-    private getGlobalSpeedMultiplier (): number
+    private getViewportSpeedScale (): number
     {
+        const referenceDiag = 860;
+        const currentDiag = Math.hypot(this.width, this.height);
+        return Math.max(1, Math.pow(currentDiag / referenceDiag, 0.8));
+    }
+
+    private getGlobalSpeedMultiplier (type: EnemyType): number
+    {
+        if (type === 'green') return 1;
         const elapsed = this.gameState.getElapsedMs();
-        if (elapsed >= 180_000) return 3;
-        if (elapsed >= 120_000) return 2;
-        if (elapsed >= 60_000)  return 1.5;
+        if (elapsed >= 210_000) return 3;
+        if (elapsed >= 150_000) return 2;
+        if (elapsed >= 90_000)  return 1.5;
         return 1;
     }
 
@@ -492,7 +487,7 @@ export class EnemySystem
         ).normalize();
         const driftFactor = PhaserMath.FloatBetween(-this.options.maxDriftFactor, this.options.maxDriftFactor);
         const direction = this.composeDirection(toCenter, driftFactor);
-        const speed = PhaserMath.FloatBetween(stage.minSpeed, stage.maxSpeed) * typeCfg.speedMultiplier;
+        const speed = PhaserMath.FloatBetween(stage.minSpeed, stage.maxSpeed) * typeCfg.speedMultiplier * this.getViewportSpeedScale();
         const hp = PhaserMath.Between(typeCfg.hp, typeCfg.hpMax);
 
         const sprite = this.scene.add.image(spawnPosition.x, spawnPosition.y, typeCfg.textureKey).setDepth(140);
@@ -520,7 +515,7 @@ export class EnemySystem
             enteredFirewallAtMs: null,
             tapRadius: this.getEnemyTapRadius(sprite.displayWidth, type),
             frozenUntilMs: 0,
-            trailSampleTimerMs: 0,
+            trailDistAccum: 0,
             trailPositions: [],
             trailGraphics,
             trailGlyphs
@@ -540,8 +535,6 @@ export class EnemySystem
 
         this.gameState.upsertEnemy(stateEnemy);
     }
-
-    // ─── Movement ─────────────────────────────────────────────────────────────
 
     private tickEnemies (deltaMs: number)
     {
@@ -588,14 +581,14 @@ export class EnemySystem
             const turnLerp = Math.min(1, this.options.turnResponsiveness * deltaSec);
             const nextDirection = currentDirection.lerp(desiredDirection, turnLerp).normalize();
 
-            enemy.velocity.copy(nextDirection.scale(enemy.speed * this.getGlobalSpeedMultiplier()));
+            enemy.velocity.copy(nextDirection.scale(enemy.speed * this.getGlobalSpeedMultiplier(enemy.type)));
             enemy.sprite.x += enemy.velocity.x * deltaSec;
             enemy.sprite.y += enemy.velocity.y * deltaSec;
 
-            enemy.trailSampleTimerMs -= deltaMs;
-            if (enemy.trailSampleTimerMs <= 0)
+            enemy.trailDistAccum += Math.hypot(enemy.velocity.x, enemy.velocity.y) * deltaSec;
+            if (enemy.trailDistAccum >= ENEMY_TYPE_CONFIG[enemy.type].trailSampleDistPx)
             {
-                enemy.trailSampleTimerMs = ENEMY_TYPE_CONFIG[enemy.type].trailSampleIntervalMs;
+                enemy.trailDistAccum -= ENEMY_TYPE_CONFIG[enemy.type].trailSampleDistPx;
                 enemy.trailPositions.unshift({ x: enemy.sprite.x, y: enemy.sprite.y });
                 if (enemy.trailPositions.length > ENEMY_TYPE_CONFIG[enemy.type].trailMaxSamples)
                 {
@@ -630,7 +623,6 @@ export class EnemySystem
 
         desired.normalize();
 
-        // Enforce progress to the center: no backward trajectories.
         if (desired.dot(toCenter) < 0.45)
         {
             return toCenter.clone().lerp(desired, 0.2).normalize();
@@ -638,8 +630,6 @@ export class EnemySystem
 
         return desired;
     }
-
-    // ─── Resolve ──────────────────────────────────────────────────────────────
 
     private resolveEnemyDestroyed (enemy: EnemyRuntime)
     {
@@ -680,8 +670,6 @@ export class EnemySystem
         this.options.onEnemyReachedServer?.(enemy.id);
     }
 
-    // ─── Size helpers ─────────────────────────────────────────────────────────
-
     private applyEnemySize (sprite: GameObjects.Image, type: EnemyType)
     {
         const baseWidth = Math.max(1, sprite.width);
@@ -691,17 +679,13 @@ export class EnemySystem
 
     private getTargetEnemyWidth ()
     {
-        if (this.width <= 480)
-        {
-            return this.options.enemyWidthMobilePx;
-        }
+        const base = this.width <= 480
+            ? this.options.enemyWidthMobilePx
+            : this.width <= 768
+                ? this.options.enemyWidthTabletPx
+                : this.options.enemyWidthDesktopPx;
 
-        if (this.width <= 768)
-        {
-            return this.options.enemyWidthTabletPx;
-        }
-
-        return this.options.enemyWidthDesktopPx;
+        return base * this.getViewportSpeedScale();
     }
 
     private createTrailObjects (type: EnemyType, spriteDepth: number)
@@ -738,7 +722,6 @@ export class EnemySystem
             return;
         }
 
-        // Dark background band — alpha fades head→tail
         for (let i = 1; i < pts.length; i++)
         {
             const alpha = (i / pts.length) * 0.92;
@@ -749,17 +732,14 @@ export class EnemySystem
             enemy.trailGraphics.strokePath();
         }
 
-        // Perpendicular axis (right-hand normal of velocity)
         const vLen = enemy.velocity.length();
         const perpX = vLen > 0.1 ? -enemy.velocity.y / vLen : 0;
         const perpY = vLen > 0.1 ?  enemy.velocity.x / vLen : 1;
 
-        // 3 rows offset along the perpendicular: top / centre / bottom
         const rowSpacing = cfg.trailGlyphFontSize * 1.15;
         const half = (cfg.trailRowCount - 1) / 2;
         const rowOffsets = Array.from({ length: cfg.trailRowCount }, (_, r) => (r - half) * rowSpacing);
 
-        // glyphs[gi]: row = gi % rowCount, column = floor(gi / rowCount)
         const cols = Math.floor(cfg.trailGlyphCount / cfg.trailRowCount);
         const step = Math.max(1, Math.floor(pts.length / cols));
 
@@ -801,12 +781,6 @@ export class EnemySystem
         return Math.max(14, displayWidth * ENEMY_TYPE_CONFIG[type].tapRadiusMultiplier);
     }
 
-    // ─── Animations ───────────────────────────────────────────────────────────
-
-    /**
-     * Flash when blue tank takes a hit but survives.
-     * White tint → scale pulse → restore HP-based tint + small chip particles.
-     */
     private playHitFlash (enemy: EnemyRuntime)
     {
         const { sprite } = enemy;
@@ -821,7 +795,6 @@ export class EnemySystem
 
         sprite.setTintFill(0xffffff);
 
-        // Chip particles (small 0/1 bits scattered on hit)
         const originX = sprite.x;
         const originY = sprite.y;
         for (let i = 0; i < 4; i++)
@@ -850,7 +823,6 @@ export class EnemySystem
             });
         }
 
-        // Scale punch + tint restore
         this.scene.tweens.add({
             targets: sprite,
             scaleX: origScaleX * 1.22,
@@ -882,10 +854,6 @@ export class EnemySystem
         });
     }
 
-    /**
-     * Full death explosion — colours, bit count, ring sizes, durations
-     * all scale with the enemy type config.
-     */
     private playEnemyDeathAnimation (enemy: EnemyRuntime)
     {
         const { sprite } = enemy;
@@ -899,7 +867,6 @@ export class EnemySystem
         const burstRadius = Math.max(22, sprite.displayWidth) * cfg.deathBurstScale;
         const dur = cfg.deathDuration;
 
-        // Core flash
         const coreR = Math.max(6, sprite.displayWidth * 0.15);
         const coreFlash = this.scene.add.circle(originX, originY, coreR, cfg.deathFlashColor, 0.72)
             .setDepth(baseDepth + 3);
@@ -915,7 +882,6 @@ export class EnemySystem
             onComplete: () => { coreFlash.destroy(); }
         });
 
-        // Primary shock ring
         const ringR = Math.max(4, sprite.displayWidth * 0.1);
         const shockRing = this.scene.add.circle(originX, originY, ringR).setDepth(baseDepth + 2);
         shockRing.setStrokeStyle(3, cfg.deathRingColor, 0.95);
@@ -930,7 +896,6 @@ export class EnemySystem
             onComplete: () => { shockRing.destroy(); }
         });
 
-        // Blue tank gets a second, wider and slower shockwave ring
         if (enemy.type === 'blue')
         {
             const outerRing = this.scene.add.circle(originX, originY, ringR * 1.5).setDepth(baseDepth + 1);
@@ -948,7 +913,6 @@ export class EnemySystem
             });
         }
 
-        // Bit burst (0/1 glyphs)
         const bitCount = enemy.type === 'blue' ? 22 : enemy.type === 'green' ? 10 : 15;
         const fontSize = enemy.type === 'green'
             ? { min: 9, max: 16 }
@@ -986,7 +950,6 @@ export class EnemySystem
             });
         }
 
-        // Sprite death tween
         sprite.setTintFill(cfg.deathSpriteColor);
 
         this.scene.tweens.add({
@@ -1006,12 +969,6 @@ export class EnemySystem
         });
     }
 
-    // ─── Splitter ─────────────────────────────────────────────────────────────
-
-    /**
-     * Spawns 2 green children at the orange splitter's death position,
-     * fanning out ±45° from the parent's last movement direction.
-     */
     private spawnSplitterChildren (parent: EnemyRuntime)
     {
         const parentDir = parent.velocity.lengthSq() > 0
@@ -1032,10 +989,6 @@ export class EnemySystem
         }
     }
 
-    /**
-     * Spawns an enemy of the given type at an arbitrary world position
-     * with an initial direction vector. Used by the splitter mechanic.
-     */
     private spawnEnemyAtPosition (type: EnemyType, x: number, y: number, direction: PhaserMath.Vector2, freezeMs = 0)
     {
         if (this.enemies.size >= this.options.maxEnemies)
@@ -1045,7 +998,7 @@ export class EnemySystem
 
         const typeCfg = ENEMY_TYPE_CONFIG[type];
         const id = `enemy-${++this.enemySeq}`;
-        const speed = PhaserMath.FloatBetween(this.options.minSpeed, this.options.maxSpeed) * typeCfg.speedMultiplier;
+        const speed = PhaserMath.FloatBetween(this.options.minSpeed, this.options.maxSpeed) * typeCfg.speedMultiplier * this.getViewportSpeedScale();
         const inFirewall = PhaserMath.Distance.Between(x, y, this.center.x, this.center.y) <= this.options.firewallRadius;
 
         const sprite = this.scene.add.image(x, y, typeCfg.textureKey).setDepth(140);
@@ -1071,7 +1024,7 @@ export class EnemySystem
             enteredFirewallAtMs: inFirewall ? this.gameState.getElapsedMs() : null,
             tapRadius: this.getEnemyTapRadius(sprite.displayWidth, type),
             frozenUntilMs: freezeMs > 0 ? this.gameState.getElapsedMs() + freezeMs : 0,
-            trailSampleTimerMs: 0,
+            trailDistAccum: 0,
             trailPositions: [],
             ...this.createTrailObjects(type, sprite.depth)
         };
