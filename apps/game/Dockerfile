@@ -9,4 +9,4 @@ RUN set -eux; \
 COPY . .
 
 EXPOSE 5000
-CMD ["sh", "-lc", "npm run dev -- --host 0.0.0.0 --port 5173"]
+CMD ["sh", "-lc", "npm run dev -- --host 0.0.0.0 --port 5174"]

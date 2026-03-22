@@ -18,7 +18,7 @@ services:
       context: ./apps/admin-panel
       dockerfile: Dockerfile
     ports:
-      - "5173:5174"
+      - "5174:5173"
     volumes:
       - ./apps/admin-panel:/app
       - /app/node_modules
