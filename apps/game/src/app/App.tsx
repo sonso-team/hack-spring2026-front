@@ -6,9 +6,11 @@ import { IntroModal } from '../widgets/IntroModal';
 import { GameOverScreen } from '../widgets/GameOverScreen';
 import { WelcomeScreen } from '../widgets/WelcomeScreen/ui/WelcomeScreen';
 import { RegistrationForm } from '../widgets/RegistrationForm/ui/RegistrationForm';
+import { Button } from '../shared/ui/Button';
 import { EventBus } from '../game/core/EventBus';
 import { startGame, finishGame } from '../shared/api';
 import { useGameStore } from '../store/gameStore';
+import '../widgets/IntroModal/ui/intro-modal.scss';
 
 type AppStep = 'welcome' | 'register' | 'rules' | 'playing' | 'gameover';
 
@@ -26,9 +28,10 @@ export function App ()
     const [step, setStep]               = useState<AppStep>('welcome');
     const [activeSceneKey, setActiveSceneKey] = useState('');
     const [gameOverData, setGameOverData]     = useState<GameOverPayload>({ score: 0, elapsedMs: 0 });
+    const [noAttemptsOpen, setNoAttemptsOpen] = useState(false);
     const finishCalled = useRef(false);
 
-    const { user, session, setSession } = useGameStore();
+    const { user, session, setSession, setUser } = useGameStore();
 
     useEffect(() =>
     {
@@ -56,6 +59,13 @@ export function App ()
             else game?.scene.start('Game');
             setActiveSceneKey('Game');
             setStep('playing');
+        },
+        onError: () =>
+        {
+            finishCalled.current = true; // не отправлять finish для незапущенной сессии
+            if (user) setUser({ ...user, attempts_left: 0, can_play: false });
+            setStep('gameover');
+            setNoAttemptsOpen(true);
         },
     });
 
@@ -106,7 +116,23 @@ export function App ()
                 />
             )}
 
-            {step === 'gameover' && (
+            {noAttemptsOpen && (
+                <div className="intro-modal-overlay" role="presentation" style={{ position: 'fixed', zIndex: 999 }}>
+                    <section className="intro-modal" role="dialog" aria-modal="true">
+                        <div className="intro-modal__content">
+                            <h1 className="intro-modal__title">Попытки<br />исчерпаны</h1>
+                            <div className="intro-modal__description">
+                                <p>Вы использовали все попытки в этом мероприятии. Спасибо за игру!</p>
+                            </div>
+                        </div>
+                        <Button className="intro-modal__action" onClick={() => setNoAttemptsOpen(false)}>
+                            Понятно
+                        </Button>
+                    </section>
+                </div>
+            )}
+
+        {step === 'gameover' && (
                 <GameOverScreen
                     bottomText="Узнавай первым о новых продуктах и мероприятиях DDoS-Guard. Подписывайся на наши соцсети."
                     canRestart={(user?.attempts_left ?? 0) > 1}

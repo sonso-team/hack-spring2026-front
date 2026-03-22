@@ -35,6 +35,7 @@ export const LobbyPage = () => {
   const [copied, setCopied] = useState(false);
   const [onlineCount, setOnlineCount] = useState<number | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
+  const [wsRetry, setWsRetry] = useState(0);
 
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const hasLoadedLobby = useRef(false);
@@ -89,6 +90,8 @@ export const LobbyPage = () => {
     wsRef.current = ws;
     setOnlineCount(null);
 
+    let closedByCleanup = false;
+
     ws.onmessage = (event) => {
       try {
         const msg = JSON.parse(event.data as string) as { players_in_game: number };
@@ -104,13 +107,20 @@ export const LobbyPage = () => {
       if (wsRef.current === ws) {
         wsRef.current = null;
       }
-      // Бэкенд закрывает с NORMAL + reason при деактивации лобби.
-      // GET /admin/lobby возвращает 404 для закрытых лобби, поэтому
-      // обновляем статус прямо в кеше без сетевого запроса.
+      if (closedByCleanup) {
+        return;
+      }
+
       if (event.wasClean && event.reason?.includes('Lobby is inactive')) {
+        // Бэкенд закрывает с NORMAL + reason при деактивации лобби.
+        // GET /admin/lobby возвращает 404 для закрытых лобби, поэтому
+        // обновляем статус прямо в кеше без сетевого запроса.
         queryClient.setQueryData<Lobby | null>(['lobby'], (old) =>
           old ? { ...old, status: 'closed' } : old,
         );
+      } else {
+        // Неожиданный обрыв — переподключиться через 3с
+        setTimeout(() => setWsRetry((r) => r + 1), 3000);
       }
     };
 
@@ -121,10 +131,11 @@ export const LobbyPage = () => {
     };
 
     return () => {
+      closedByCleanup = true;
       ws.close();
       wsRef.current = null;
     };
-  }, [lobby?.status, queryClient]);
+  }, [lobby, queryClient, wsRetry]);
 
   const { data: resultsData } = useQuery({
     queryKey: ['results', debouncedSearch, page],
