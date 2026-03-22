@@ -109,7 +109,7 @@ export function App ()
             {step === 'gameover' && (
                 <GameOverScreen
                     bottomText="Узнавай первым о новых продуктах и мероприятиях DDoS-Guard. Подписывайся на наши соцсети."
-                    canRestart={(user?.attempts_left ?? 0) > 0}
+                    canRestart={(user?.attempts_left ?? 0) > 1}
                     description=""
                     onRestart={handleRestart}
                     scoreCaption="Итоговый счёт"
