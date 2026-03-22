@@ -4,7 +4,7 @@ services:
       context: ./apps/game
       dockerfile: Dockerfile
     ports:
-      - "5000:5000"
+      - "5173:5173"
     volumes:
       - ./apps/game:/app
       - /app/node_modules
@@ -18,7 +18,7 @@ services:
       context: ./apps/admin-panel
       dockerfile: Dockerfile
     ports:
-      - "5001:5001"
+      - "5173:5174"
     volumes:
       - ./apps/admin-panel:/app
       - /app/node_modules
