@@ -18,7 +18,7 @@ export const LobbyCreatePage = () => {
   const queryClient = useQueryClient();
 
   const [name, setName] = useState('');
-  const [game, setGame] = useState<GameType>('server-defender');
+  const [game, setGame] = useState<GameType>('ddos_ninja');
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
   const [durationHours, setDurationHours] = useState(8);
   const [maxAttempts, setMaxAttempts] = useState(1);
