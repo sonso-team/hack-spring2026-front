@@ -1,36 +1,24 @@
 services:
-  router:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - game
-      - admin
-    networks:
-      - frontend
-    restart: unless-stopped
-
   game:
     build:
       context: ./apps/game
       dockerfile: Dockerfile
+    ports:
+      - "5000:80"
     networks:
-      - frontend
+      - front
     restart: unless-stopped
 
   admin:
     build:
       context: ./apps/admin-panel
       dockerfile: Dockerfile
+    ports:
+      - "5001:80"
     networks:
-      - frontend
-      - backend
+      - front
     restart: unless-stopped
 
 networks:
-  frontend:
-    driver: bridge
-  backend:
-    external: true
+  front:
+   external: true

@@ -29,7 +29,7 @@ const IconTrash = () => (
   </svg>
 );
 
-const AdminRow = ({ admin, onDelete }: { admin: AdminFull; onDelete: (id: number) => void }) => {
+const AdminRow = ({ admin, onDelete }: { admin: AdminFull; onDelete: (id: string) => void }) => {
   const [confirming, setConfirming] = useState(false);
 
   return (

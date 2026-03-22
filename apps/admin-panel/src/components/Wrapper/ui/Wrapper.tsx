@@ -5,7 +5,7 @@ import { Button } from '@/components/Button';
 import { ModalProvider } from '@/components/Modal';
 import { useAuthStore } from '@/store/authStore';
 
-import './Wrapper.scss';
+import './wrapper.scss';
 
 export const Wrapper = () => {
   const navigate = useNavigate();
