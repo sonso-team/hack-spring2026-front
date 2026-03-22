@@ -41,6 +41,7 @@ export const LobbyPage = () => {
   const { data: lobby, isLoading: lobbyLoading } = useQuery({
     queryKey: ['lobby'],
     queryFn: getLobby,
+    staleTime: Infinity,
     refetchInterval: (query) => (query.state.data?.status === 'active' ? 30_000 : false),
   });
 
