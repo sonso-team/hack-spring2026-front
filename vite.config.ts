@@ -10,4 +10,20 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8800',
+        changeOrigin: true,
+        headers: {
+          origin: 'http://localhost:8800',
+        },
+      },
+      '/ws': {
+        target: 'ws://localhost:8800',
+        ws: true,
+        changeOrigin: true,
+      },
+    },
+  },
 });

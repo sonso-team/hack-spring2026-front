@@ -36,16 +36,18 @@ const AdminRow = ({ admin, onDelete }: { admin: AdminFull; onDelete: (id: number
     <li className={`admins__row${confirming ? ' admins__row--confirming' : ''}`}>
       <Avatar firstName={admin.first_name} lastName={admin.last_name} />
 
-      <div className="admins__info">
-        <span className="admins__name">
-          {admin.last_name} {admin.first_name}
-        </span>
-        <span className="admins__position">{admin.position}</span>
-      </div>
+      <div className="admins__info-wrap">
+        <div className="admins__info">
+          <span className="admins__name">
+            {admin.last_name} {admin.first_name}
+          </span>
+          <span className="admins__position">{admin.position}</span>
+        </div>
 
-      <span className={`admins__role admins__role--${admin.role}`}>
-        {admin.role === 'superadmin' ? 'Суперадмин' : 'Администратор'}
-      </span>
+        <span className={`admins__role admins__role--${admin.role}`}>
+          {admin.role === 'superadmin' ? 'Суперадмин' : 'Администратор'}
+        </span>
+      </div>
 
       {admin.role !== 'superadmin' && (
         <div className="admins__actions">

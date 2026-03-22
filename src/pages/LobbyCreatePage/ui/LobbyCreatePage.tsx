@@ -53,7 +53,7 @@ export const LobbyCreatePage = () => {
     mutate({
       name: name.trim(),
       game,
-      ...(hasDifficulty && { difficulty }),
+      difficulty,
       duration_minutes: durationHours * 60,
       max_attempts: maxAttempts,
       game_over_text: gameOverText.trim(),

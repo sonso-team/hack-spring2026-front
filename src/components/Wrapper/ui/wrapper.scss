@@ -51,6 +51,12 @@
     gap: 12px;
   }
 
+  &__admin-name {
+    @media (max-width: 640px) {
+      display: none;
+    }
+  }
+
   &__logout {
     border: 1.5px solid rgba(255, 255, 255, 0.25);
     border-radius: var(--r-md);

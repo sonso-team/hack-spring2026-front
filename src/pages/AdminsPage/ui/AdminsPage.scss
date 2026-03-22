@@ -136,8 +136,22 @@
     }
   }
 
-  &__info {
+  &__info-wrap {
     flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    min-width: 0;
+
+    @media (max-width: 560px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+    }
+  }
+
+  &__info {
     display: flex;
     flex-direction: column;
     gap: 3px;
@@ -184,11 +198,6 @@
     &--admin {
       background: #1868f0;
       color: #fff;
-    }
-
-    @media (max-width: 1000px) {
-      font-size: 10px;
-      padding: 3px 8px;
     }
   }
 

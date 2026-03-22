@@ -1,14 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import QRCode from 'qrcode';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import {
   exportResults,
   getLobby,
-  getLobbyLink,
   getLobbyResults,
-  getOnlinePlayers,
   getRandomWinner,
   toggleLobby,
 } from '@/api/lobby';
@@ -17,6 +15,7 @@ import { useModal } from '@/components/Modal';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { StatCard } from '@/components/StatCard';
+import { PLAYER_URL } from '@/shared/constants';
 
 import { avgDuration, fmtTime } from '../lib/format';
 
@@ -33,6 +32,9 @@ export const LobbyPage = () => {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
   const [copied, setCopied] = useState(false);
+  const [onlineCount, setOnlineCount] = useState<number | null>(null);
+  const wsRef = useRef<WebSocket | null>(null);
+
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
 
   const { data: lobby, isLoading: lobbyLoading } = useQuery({
@@ -41,35 +43,24 @@ export const LobbyPage = () => {
     refetchInterval: (query) => (query.state.data?.status === 'active' ? 30_000 : false),
   });
 
-  const { data: onlineData } = useQuery({
-    queryKey: ['lobby-online'],
-    queryFn: getOnlinePlayers,
-    enabled: lobby?.status === 'active',
-    refetchInterval: 5_000,
-  });
-
-  const { data: lobbyLink } = useQuery({
-    queryKey: ['lobby-link'],
-    queryFn: getLobbyLink,
-    enabled: !!lobby,
-  });
-
   useEffect(() => {
     if (!lobbyLoading && lobby === null) {
       navigate('/lobby/create', { replace: true });
     }
   }, [lobbyLoading, lobby, navigate]);
 
+  const playerLink = lobby ? `${PLAYER_URL}?invite_code=${lobby.invite_code}` : '';
+
   useEffect(() => {
-    if (!lobbyLink?.url) {
+    if (!playerLink) {
       return;
     }
-    QRCode.toDataURL(lobbyLink.url, {
+    QRCode.toDataURL(playerLink, {
       width: 400,
       margin: 2,
       color: { dark: '#000000', light: '#ffffff' },
     }).then(setQrDataUrl);
-  }, [lobbyLink?.url]);
+  }, [playerLink]);
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -78,6 +69,46 @@ export const LobbyPage = () => {
     }, 300);
     return () => clearTimeout(t);
   }, [search]);
+
+  useEffect(() => {
+    if (!lobby || lobby.status !== 'active') {
+      wsRef.current?.close();
+      wsRef.current = null;
+      return;
+    }
+
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const ws = new WebSocket(`${protocol}://${window.location.host}/ws/play`);
+    wsRef.current = ws;
+
+    ws.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data as string) as { players_in_game: number };
+        if (typeof msg.players_in_game === 'number') {
+          setOnlineCount(msg.players_in_game);
+        }
+      } catch {
+        // ignore non-JSON messages
+      }
+    };
+
+    ws.onclose = (event) => {
+      wsRef.current = null;
+      // Бэкенд закрывает с NORMAL + reason при деактивации лобби — обновляем данные
+      if (event.wasClean && event.reason?.includes('Lobby is inactive')) {
+        queryClient.invalidateQueries({ queryKey: ['lobby'] });
+      }
+    };
+
+    ws.onerror = () => {
+      wsRef.current = null;
+    };
+
+    return () => {
+      ws.close();
+      wsRef.current = null;
+    };
+  }, [lobby?.status, queryClient]);
 
   const { data: resultsData } = useQuery({
     queryKey: ['results', debouncedSearch, page],
@@ -100,8 +131,8 @@ export const LobbyPage = () => {
 
   const toggleMutation = useMutation({
     mutationFn: toggleLobby,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['lobby'] });
+    onSuccess: (data) => {
+      queryClient.setQueryData(['lobby'], data);
       queryClient.invalidateQueries({ queryKey: ['results'] });
     },
   });
@@ -123,10 +154,25 @@ export const LobbyPage = () => {
           </Button>
         </div>,
       ),
+    onError: () =>
+      open(
+        <div className="lobby__modal">
+          <p className="lobby__modal-label">Нет участников</p>
+          <p
+            className="lobby__modal-name"
+            style={{ fontSize: '14px', color: 'var(--c-text-muted)' }}
+          >
+            Пока никто не сыграл в этом мероприятии
+          </p>
+          <Button onClick={close} fullWidth>
+            Закрыть
+          </Button>
+        </div>,
+      ),
   });
 
   const handleCopy = async () => {
-    const text = lobbyLink?.url ?? lobby?.invite_code ?? '';
+    const text = playerLink;
     try {
       await navigator.clipboard.writeText(text);
     } catch {
@@ -240,7 +286,7 @@ export const LobbyPage = () => {
       </div>
 
       <div className="lobby__stats">
-        <StatCard label="Играют сейчас" value={onlineData?.online ?? '—'} />
+        <StatCard label="Играют сейчас" value={onlineCount ?? lobby.online_players_count} />
         <StatCard label="Сыграли всего" value={allTotal} />
         <StatCard label="Ср. время сессии" value={avgDuration(allResults)} />
       </div>

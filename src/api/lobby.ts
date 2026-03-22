@@ -1,12 +1,12 @@
 import { isAxiosError } from 'axios';
 
 import { api } from '@/shared/axios.config';
-import type { Difficulty, GameType, Lobby, LobbyStatus, PlayerResult } from '@/shared/types';
+import type { Difficulty, GameType, Lobby, PlayerResult } from '@/shared/types';
 
 export interface CreateLobbyBody {
   name: string;
   game: GameType;
-  difficulty?: Difficulty;
+  difficulty: Difficulty;
   duration_minutes: number;
   max_attempts: number;
   game_over_text: string;
@@ -42,24 +42,20 @@ export const createLobby = async (body: CreateLobbyBody): Promise<Lobby> => {
   return data;
 };
 
-export const toggleLobby = async (): Promise<{ id: number; status: LobbyStatus }> => {
-  const { data } = await api.patch<{ id: number; status: LobbyStatus }>('/admin/lobby/toggle');
-  return data;
-};
-
-export const getLobbyLink = async (): Promise<{ url: string }> => {
-  const { data } = await api.get<{ url: string }>('/admin/lobby/link');
-  return data;
-};
-
-export const getOnlinePlayers = async (): Promise<{ online: number }> => {
-  const { data } = await api.get<{ online: number }>('/admin/lobby/online');
+export const toggleLobby = async (): Promise<Lobby> => {
+  const { data } = await api.patch<Lobby>('/admin/lobby/toggle');
   return data;
 };
 
 export const getLobbyResults = async (params?: ResultsParams): Promise<ResultsResponse> => {
-  const { data } = await api.get<ResultsResponse>('/admin/lobby/results', { params });
-  return data;
+  const { data } = await api.get<PlayerResult[]>('/admin/lobby/results', {
+    params: { search: params?.search, sort_by: params?.sort_by, order: params?.order },
+  });
+  const total = data.length;
+  const page = params?.page ?? 1;
+  const limit = params?.limit ?? 20;
+  const offset = (page - 1) * limit;
+  return { results: data.slice(offset, offset + limit), total };
 };
 
 export const exportResults = async (): Promise<void> => {
@@ -75,7 +71,7 @@ export const exportResults = async (): Promise<void> => {
 };
 
 export const getRandomWinner = async (): Promise<{
-  player_id: number;
+  player_id: string;
   first_name: string;
   last_name: string;
   score: number;
