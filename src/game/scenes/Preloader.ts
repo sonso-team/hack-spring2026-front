@@ -1,7 +1,18 @@
 import { Scene } from 'phaser';
+import { Background } from '../background/Background';
 
 export class Preloader extends Scene
 {
+    private backgroundEffect!: Background;
+    private progressOutline!: Phaser.GameObjects.Rectangle;
+    private progressBar!: Phaser.GameObjects.Rectangle;
+    private progressValue = 0;
+
+    private readonly handleResize = (gameSize: Phaser.Structs.Size) =>
+    {
+        this.updateLayout(gameSize.width, gameSize.height);
+    };
+
     constructor ()
     {
         super('Preloader');
@@ -9,39 +20,70 @@ export class Preloader extends Scene
 
     init ()
     {
-        //  We loaded this image in our Boot Scene, so we can display it here
-        this.add.image(512, 384, 'background');
+        const { width, height } = this.scale;
+        const centerX           = width / 2;
+        const centerY           = height / 2;
+        const progressBoxWidth  = Math.min(width * 0.7, 468);
+        const progressBarPadding = 4;
+        const progressBarWidth  = progressBoxWidth - progressBarPadding * 2;
 
-        //  A simple progress bar. This is the outline of the bar.
-        this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff);
+        this.cameras.main.setBackgroundColor(0x0f092b);
+        this.backgroundEffect = new Background(this);
 
-        //  This is the progress bar itself. It will increase in size from the left based on the % of progress.
-        const bar = this.add.rectangle(512-230, 384, 4, 28, 0xffffff);
+        this.progressOutline = this.add.rectangle(centerX, centerY, progressBoxWidth, 32).setStrokeStyle(1, 0xffffff);
+        this.progressBar     = this.add.rectangle(centerX - progressBarWidth / 2, centerY, progressBarPadding, 28, 0xffffff).setOrigin(0, 0.5);
 
-        //  Use the 'progress' event emitted by the LoaderPlugin to update the loading bar
-        this.load.on('progress', (progress: number) => {
-
-            //  Update the progress bar (our bar is 464px wide, so 100% = 464px)
-            bar.width = 4 + (460 * progress);
-
+        this.load.on('progress', (progress: number) =>
+        {
+            this.progressValue     = progress;
+            this.progressBar.width = progressBarPadding + progressBarWidth * progress;
         });
+
+        this.scale.on('resize', this.handleResize);
     }
 
     preload ()
     {
-        //  Load the assets for the game - Replace with your own assets
         this.load.setPath('assets');
 
-        this.load.image('logo', 'logo.png');
-        this.load.image('star', 'star.png');
+        this.load.image('game-bg',     'background/background.png');
+        this.load.svg('server',        'characters/server-chan.svg',  { width: 256, height: 256 });
+        this.load.image('enemy',       'characters/virus-kun.png');
+        this.load.svg('little-bro',   'characters/little-bro.svg',  { width: 128, height: 128 });
+        this.load.svg('big-bro',      'characters/big-bro.svg',     { width: 128, height: 128 });
+        this.load.svg('orange-enemy', 'characters/orange.svg',      { width: 128, height: 128 });
+        this.load.svg('heart',        'heart.svg',                   { width: 64,  height: 64  });
+        this.load.svg('heart-broken', 'heart-broken.svg',            { width: 64,  height: 64  });
     }
 
     create ()
     {
-        //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
-        //  For example, you can define global animations here, so we can use them in other scenes.
-
-        //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
         this.scene.start('MainMenu');
+    }
+
+    update (_time: number, delta: number)
+    {
+        this.backgroundEffect.update(delta);
+    }
+
+    shutdown ()
+    {
+        this.scale.off('resize', this.handleResize);
+        this.backgroundEffect.destroy();
+    }
+
+    private updateLayout (width = this.scale.width, height = this.scale.height)
+    {
+        const progressBoxWidth  = Math.min(width * 0.7, 468);
+        const progressBarPadding = 4;
+        const progressBarWidth  = progressBoxWidth - progressBarPadding * 2;
+        const centerX           = width / 2;
+        const centerY           = height / 2;
+
+        this.backgroundEffect.resize(width, height);
+        this.progressOutline.setPosition(centerX, centerY);
+        this.progressOutline.width = progressBoxWidth;
+        this.progressBar.setPosition(centerX - progressBarWidth / 2, centerY);
+        this.progressBar.width = progressBarPadding + progressBarWidth * this.progressValue;
     }
 }
