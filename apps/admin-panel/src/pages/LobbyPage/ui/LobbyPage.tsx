@@ -16,6 +16,7 @@ import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { StatCard } from '@/components/StatCard';
 import { PLAYER_URL } from '@/shared/constants';
+import type { Lobby } from '@/shared/types';
 
 import { avgDuration, fmtTime } from '../lib/format';
 
@@ -103,9 +104,13 @@ export const LobbyPage = () => {
       if (wsRef.current === ws) {
         wsRef.current = null;
       }
-      // Бэкенд закрывает с NORMAL + reason при деактивации лобби — обновляем данные
+      // Бэкенд закрывает с NORMAL + reason при деактивации лобби.
+      // GET /admin/lobby возвращает 404 для закрытых лобби, поэтому
+      // обновляем статус прямо в кеше без сетевого запроса.
       if (event.wasClean && event.reason?.includes('Lobby is inactive')) {
-        queryClient.invalidateQueries({ queryKey: ['lobby'] });
+        queryClient.setQueryData<Lobby | null>(['lobby'], (old) =>
+          old ? { ...old, status: 'closed' } : old,
+        );
       }
     };
 
