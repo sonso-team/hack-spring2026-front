@@ -12,7 +12,7 @@ import { useGameStore } from '../store/gameStore';
 
 type AppStep = 'welcome' | 'register' | 'rules' | 'playing' | 'gameover';
 
-const inviteCode = new URLSearchParams(`${window.location.search}/game`).get('invite_code') ?? '';
+const inviteCode = new URLSearchParams(`${window.location.search}/play`).get('invite_code') ?? '';
 
 interface GameOverPayload
 {
