@@ -4,25 +4,32 @@ services:
       context: ./apps/game
       dockerfile: Dockerfile
     ports:
-      - "5000:80"
+      - "5000:5000"
+    volumes:
+      - ./apps/game:/app
+      - /app/node_modules
     networks:
-      - front
       - backend
-    restart: unless-stopped
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - API_TARGET=http://hack-spring2026-api:8800
+      - WS_TARGET=ws://hack-spring2026-api:8800
 
   admin:
     build:
       context: ./apps/admin-panel
       dockerfile: Dockerfile
     ports:
-      - "5001:80"
+      - "5001:5001"
+    volumes:
+      - ./apps/admin-panel:/app
+      - /app/node_modules
     networks:
-      - front
       - backend
-    restart: unless-stopped
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - API_TARGET=http://hack-spring2026-api:8800
 
 networks:
-  front:
-    external: true
   backend:
     external: true

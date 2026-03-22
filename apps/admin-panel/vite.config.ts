@@ -13,14 +13,11 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8800',
+        target: process.env.API_TARGET ?? 'http://localhost:8800',
         changeOrigin: true,
-        headers: {
-          origin: 'http://localhost:8800',
-        },
       },
       '/ws': {
-        target: 'ws://localhost:8800',
+        target: process.env.WS_TARGET ?? 'ws://localhost:8800',
         ws: true,
         changeOrigin: true,
       },
