@@ -9,7 +9,6 @@
         radial-gradient(circle at top, rgba(78, 94, 207, 0.28), transparent 44%),
         linear-gradient(180deg, rgba(11, 20, 61, 0.92) 0%, rgba(9, 17, 54, 0.96) 100%),
         url('/assets/background/background.png') center / cover no-repeat;
-    
 }
 
 .game-over-screen__content {
@@ -77,7 +76,6 @@
 }
 
 .game-over-screen__restart {
-    width: 100%;
     margin-top: 28px;
 }
 
@@ -104,39 +102,16 @@
 }
 
 @media (max-width: 768px) {
-    .game-over-screen__content {
-        width: min(100vw, 400px);
-        padding: 30px 18px 16px;
-    }
-
-    .game-over-screen__title {
-        margin-top: 40px;
-        font-size: 2.5rem;
-    }
-
-    .game-over-screen__score-card {
-        margin-top: 24px;
-    }
-
-    .game-over-screen__description {
-        margin-top: 24px;
-    }
+    .game-over-screen__content  { width: min(100vw, 400px); padding: 30px 18px 16px; }
+    .game-over-screen__title    { margin-top: 40px; font-size: 2.5rem; }
+    .game-over-screen__score-card { margin-top: 24px; }
+    .game-over-screen__description { margin-top: 24px; }
 }
 
 @media (max-width: 480px) {
-    .game-over-screen__content {
-        width: 100vw;
-        padding: 36px 18px 16px;
-    }
-
-    .game-over-screen__logo {
-        width: min(100%, 210px);
-    }
-
-    .game-over-screen__title {
-        font-size: 2.2rem;
-        margin-top: 36px;
-    }
+    .game-over-screen__content  { width: 100vw; padding: 36px 18px 16px; }
+    .game-over-screen__logo     { width: min(100%, 210px); }
+    .game-over-screen__title    { font-size: 2.2rem; margin-top: 36px; }
 
     .game-over-screen__score-card {
         width: min(100%, 190px);
@@ -144,19 +119,8 @@
         border-radius: 14px;
     }
 
-    .game-over-screen__score-value {
-        font-size: 3.4rem;
-    }
-
-    .game-over-screen__score-caption {
-        font-size: 1.75rem;
-    }
-
-    .game-over-screen__description {
-        font-size: 1rem;
-    }
-
-    .game-over-screen__bottom-text {
-        font-size: 0.95rem;
-    }
+    .game-over-screen__score-value   { font-size: 3.4rem; }
+    .game-over-screen__score-caption { font-size: 1.75rem; }
+    .game-over-screen__description   { font-size: 1rem; }
+    .game-over-screen__bottom-text   { font-size: 0.95rem; }
 }

@@ -1,22 +1,19 @@
 import { Scene } from 'phaser';
-import { EventBus } from '../EventBus';
-import { Background } from '../Background';
+import { EventBus } from '../core/EventBus';
+import { Background } from '../background/Background';
 
 export class MainMenu extends Scene
 {
-    backgroundEffect!: Background;
-    private readonly handleResize = (gameSize: Phaser.Structs.Size) => {
-        this.updateLayout(gameSize.width, gameSize.height);
+    private backgroundEffect!: Background;
+
+    private readonly handleResize = (gameSize: Phaser.Structs.Size) =>
+    {
+        this.backgroundEffect.resize(gameSize.width, gameSize.height);
     };
 
     constructor ()
     {
         super('MainMenu');
-    }
-
-    private updateLayout (width = this.scale.width, height = this.scale.height)
-    {
-        this.backgroundEffect.resize(width, height);
     }
 
     create ()

@@ -1,7 +1,8 @@
-import { TelegramSocialPill, VkSocialPill } from '../../../shared/ui/SocialPills';
-import './game-over-menu.scss';
+import { VkSocialPill, TelegramSocialPill } from '../../../shared/ui/SocialPills';
+import { Button } from '../../../shared/ui/Button';
+import './game-over-screen.scss';
 
-export interface GameOverMenuProps
+export interface GameOverScreenProps
 {
     title: string;
     scoreValue: number | string;
@@ -19,7 +20,7 @@ export interface GameOverMenuProps
     onRestart?: () => void;
 }
 
-export function GameOverMenu({
+export function GameOverScreen ({
     title,
     scoreValue,
     scoreCaption,
@@ -33,11 +34,11 @@ export function GameOverMenu({
     telegramHref,
     logoSrc = '/assets/logo/logo.svg',
     logoAlt = 'DDOS-GUARD',
-    onRestart
-}: GameOverMenuProps)
+    onRestart,
+}: GameOverScreenProps)
 {
     return (
-        <section className="game-over-screen" role="region" aria-label={title}>
+        <section aria-label={title} className="game-over-screen" role="region">
             <div className="game-over-screen__content">
                 <header className="game-over-screen__header">
                     <img alt={logoAlt} className="game-over-screen__logo" src={logoSrc} />
@@ -53,14 +54,13 @@ export function GameOverMenu({
                 <p className="game-over-screen__description">{description}</p>
 
                 {canRestart && (
-                    <button className="intro-modal__action game-over-screen__restart" onClick={onRestart} type="button">
+                    <Button className="game-over-screen__restart" onClick={onRestart}>
                         {restartText}
-                    </button>
+                    </Button>
                 )}
 
                 <div className="game-over-screen__bottom">
                     <p className="game-over-screen__bottom-text">{bottomText}</p>
-
                     <div className="game-over-screen__socials">
                         <VkSocialPill href={vkHref} text={vkText} />
                         <TelegramSocialPill href={telegramHref} text={telegramText} />

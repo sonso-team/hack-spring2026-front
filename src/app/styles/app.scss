@@ -1,0 +1,48 @@
+@use 'variables' as *;
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+html,
+body,
+#root {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    margin: 0;
+    background:
+        radial-gradient(circle at top, rgba(48, 82, 183, 0.26), transparent 36%),
+        linear-gradient(180deg, #090113 0%, #06000d 100%);
+    color: #ffffff;
+    font-family: var(--font-family-base);
+    font-weight: var(--font-weight-regular);
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+#app {
+    position: relative;
+    width: 100%;
+    height: 100dvh;
+    overflow: hidden;
+}
+
+.game-background {
+    position: absolute;
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+}
+
+#game-container {
+    width: 100%;
+    height: 100%;
+
+    canvas { display: block; }
+}
