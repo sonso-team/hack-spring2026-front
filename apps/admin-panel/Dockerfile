@@ -1,10 +1,9 @@
 FROM node:20-alpine
 WORKDIR /app
-
 COPY package.json package-lock.json* ./
 
 RUN set -eux; \
-  npm ci;
+  npm install;
 
 COPY . .
 
