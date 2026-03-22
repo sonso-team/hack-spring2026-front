@@ -8,8 +8,6 @@ services:
     volumes:
       - ./apps/game:/app
       - /app/node_modules
-    networks:
-      - backend
     environment:
       - CHOKIDAR_USEPOLLING=true
       - API_TARGET=http://hack-spring2026-api:8800
@@ -24,12 +22,7 @@ services:
     volumes:
       - ./apps/admin-panel:/app
       - /app/node_modules
-    networks:
-      - backend
     environment:
       - CHOKIDAR_USEPOLLING=true
       - API_TARGET=http://hack-spring2026-api:8800
 
-networks:
-  backend:
-    external: true
