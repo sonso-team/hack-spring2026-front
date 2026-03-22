@@ -36,6 +36,7 @@ export const LobbyPage = () => {
   const wsRef = useRef<WebSocket | null>(null);
 
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+  const hasLoadedLobby = useRef(false);
 
   const { data: lobby, isLoading: lobbyLoading } = useQuery({
     queryKey: ['lobby'],
@@ -44,8 +45,12 @@ export const LobbyPage = () => {
   });
 
   useEffect(() => {
-    if (!lobbyLoading && lobby === null) {
-      navigate('/lobby/create', { replace: true });
+    if (!lobbyLoading) {
+      if (lobby) {
+        hasLoadedLobby.current = true;
+      } else if (!hasLoadedLobby.current) {
+        navigate('/lobby/create', { replace: true });
+      }
     }
   }, [lobbyLoading, lobby, navigate]);
 
@@ -80,6 +85,7 @@ export const LobbyPage = () => {
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     const ws = new WebSocket(`${protocol}://${window.location.host}/ws/play`);
     wsRef.current = ws;
+    setOnlineCount(null);
 
     ws.onmessage = (event) => {
       try {
@@ -93,7 +99,9 @@ export const LobbyPage = () => {
     };
 
     ws.onclose = (event) => {
-      wsRef.current = null;
+      if (wsRef.current === ws) {
+        wsRef.current = null;
+      }
       // Бэкенд закрывает с NORMAL + reason при деактивации лобби — обновляем данные
       if (event.wasClean && event.reason?.includes('Lobby is inactive')) {
         queryClient.invalidateQueries({ queryKey: ['lobby'] });
@@ -101,7 +109,9 @@ export const LobbyPage = () => {
     };
 
     ws.onerror = () => {
-      wsRef.current = null;
+      if (wsRef.current === ws) {
+        wsRef.current = null;
+      }
     };
 
     return () => {

@@ -26,9 +26,16 @@ export class Game extends Scene
         this.enemySystem.tryHitEnemy(pointer.worldX, pointer.worldY);
     };
 
+    private resizeTimer: ReturnType<typeof setTimeout> | null = null;
+
     private readonly handleResize = (gameSize: Phaser.Structs.Size) =>
     {
-        this.updateLayout(gameSize.width, gameSize.height);
+        if (this.resizeTimer !== null) { clearTimeout(this.resizeTimer); }
+        this.resizeTimer = setTimeout(() =>
+        {
+            this.resizeTimer = null;
+            this.updateLayout(gameSize.width, gameSize.height);
+        }, 150);
     };
 
     constructor ()
@@ -147,6 +154,7 @@ export class Game extends Scene
 
     shutdown ()
     {
+        if (this.resizeTimer !== null) { clearTimeout(this.resizeTimer); this.resizeTimer = null; }
         this.unsubscribeState?.();
         this.unsubscribeState = undefined;
         this.scale.off('resize', this.handleResize);

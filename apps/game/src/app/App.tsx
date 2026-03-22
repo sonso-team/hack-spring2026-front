@@ -36,10 +36,10 @@ export function App ()
         return () => { EventBus.off('game-over-data', setGameOverData); };
     }, []);
 
-    // Trigger finish when game-over scene activates
+    // Trigger finish when game-over scene activates (only while playing, not during restart)
     useEffect(() =>
     {
-        if (activeSceneKey === 'GameOver' && step !== 'gameover')
+        if (activeSceneKey === 'GameOver' && step === 'playing')
         {
             setStep('gameover');
         }
