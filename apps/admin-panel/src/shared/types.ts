@@ -1,6 +1,6 @@
 export type AdminRole = 'superadmin' | 'admin';
 export type LobbyStatus = 'active' | 'closed';
-export type GameType = 'ddos-ninja';
+export type GameType = 'server-defender';
 export type Difficulty = 'easy' | 'medium' | 'hard';
 export type PlayerStatus = 'completed' | 'suspicious';
 
