@@ -30,4 +30,4 @@ export const startGame = (player_id: string) =>
     api.post<StartResponse>('/play/game/start', { player_id }).then((r: { data: StartResponse }) => r.data);
 
 export const finishGame = (session_token: string, final_score: number) =>
-    api.post('/play/game/finish', { session_token, final_score, snapshots: [] });
+    api.post('/play/game/finish', { session_token, final_score });

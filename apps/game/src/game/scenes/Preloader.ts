@@ -44,7 +44,7 @@ export class Preloader extends Scene
 
     preload ()
     {
-        this.load.setPath('assets');
+        this.load.setPath(`${import.meta.env.BASE_URL}assets`);
 
         this.load.image('game-bg',     'background/background.png');
         this.load.svg('server',        'characters/server-chan.svg',  { width: 256, height: 256 });

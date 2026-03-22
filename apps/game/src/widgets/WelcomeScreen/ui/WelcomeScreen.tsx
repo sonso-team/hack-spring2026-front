@@ -17,11 +17,11 @@ export function WelcomeScreen ({ onDone }: WelcomeScreenProps)
         <div className="welcome-screen">
             <div className="welcome-screen__inner">
                 <div className="game-over-screen__header">
-                    <img alt='DDOS-GUARD' className="game-over-screen__logo" src='/assets/logo/logo.svg' />
+                    <img alt='DDOS-GUARD' className="game-over-screen__logo" src={`${import.meta.env.BASE_URL}assets/logo/logo.svg`} />
                 </div>
                 <h1 className="welcome-screen__title">Добро<br />пожаловать!</h1>
                 <img
-                    src="/assets/characters/drakon.png"
+                    src={`${import.meta.env.BASE_URL}assets/characters/drakon.png`}
                     alt=""
                     aria-hidden="true"
                     className="welcome-screen__mascot"

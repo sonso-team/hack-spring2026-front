@@ -60,7 +60,7 @@ export class Game extends Scene
 
     private loadMissingTextures (missing: readonly string[])
     {
-        this.load.setPath('assets');
+        this.load.setPath(`${import.meta.env.BASE_URL}assets`);
 
         const loaders: Record<string, () => void> = {
             'game-bg':       () => this.load.image('game-bg',     'background/background.png'),

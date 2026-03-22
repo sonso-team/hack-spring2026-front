@@ -71,7 +71,7 @@ export function RegistrationForm ({ inviteCode, onSuccess }: RegistrationFormPro
         <div className="reg-screen">
             <div className="reg-screen__panel">
                 <div className="reg-screen__logo">
-                    <img src="/assets/logo/logo.svg" alt="DDoS-Guard" />
+                    <img src={`${import.meta.env.BASE_URL}assets/logo/logo.svg`} alt="DDoS-Guard" />
                 </div>
 
                 <h2 className="reg-screen__title">Прежде чем мы начнём…</h2>
