@@ -123,12 +123,12 @@ export const LobbyCreatePage = () => {
 
           <div className="lobby-create__field">
             <label className="lobby-create__label">Длительность</label>
-            <Stepper value={durationHours} min={1} max={144} unit="ч" onChange={setDurationHours} />
+            <Stepper value={durationHours} min={1} max={8760} unit="ч" onChange={setDurationHours} />
           </div>
 
           <div className="lobby-create__field">
             <label className="lobby-create__label">Количество попыток</label>
-            <Stepper value={maxAttempts} min={1} max={10} onChange={setMaxAttempts} />
+            <Stepper value={maxAttempts} min={1} max={1000} onChange={setMaxAttempts} />
           </div>
 
           <div className="lobby-create__field">
